@@ -65,7 +65,7 @@ setClass(
     mean_surv = 25,
     # fecundity_genes should be a vector with 3 values:
     # mean_eggs, sd_eggs, and skew
-    fecundity_genes = c(25, 15,-5),
+    fecundity_genes = c(25, 15, -5),
     # Below are phenotypes
     PE = matrix(0, 100, 100),
     GW = rep(0, 100),
@@ -214,7 +214,7 @@ setMethod("get_fecundity",
 #'
 #' @param object An object
 #' @param first_temp Value of temperature for first fly experience.
-#' @param second_temp Value of temperature forsecond fly experience.
+#' @param second_temp Value of temperature for second fly experience.
 #' @rdname get_prediction
 setGeneric("get_prediction",  function(object,
                                        first_temp,
@@ -226,4 +226,48 @@ setMethod("get_prediction",
           function(object, first_temp, second_temp) {
             return(object@PE[which.min(abs(object@x_PE - second_temp)),
                              which.min(abs(object@x_PE - first_temp))])
+          })
+
+#' @title fly method to calculate survival of flies
+#'
+#' @param object An object
+#' @param received_PE Prediction received by the mother.
+#' @param temperature Value of temperature.
+#' @param offspring_error Amount of error that offspring have to measure temperature. Varies between replicates.
+#' @param overall_GW Baseline value for GW. Varies between replicates.
+#' @rdname calculate_survival
+setGeneric("calculate_survival",  function(object,
+                                           received_PE,
+                                           temperature,
+                                           offspring_error,
+                                           overall_GW)
+  standardGeneric("calculate_survival"))
+
+
+setMethod("calculate_survival",
+          "fly",
+          function(object,
+                   received_PE,
+                   temperature,
+                   offspring_error,
+                   overall_GW) {
+            offspring_experience <- temperature + rnorm(1, sd = offspring_error)
+            offspring_difference <-
+              abs(offs_experience - object@mean_surv)
+            # in a previous version, I used a different "x_" vector for weights
+            # but it has the same length as x_PE with only half the max. This
+            # should be equivalent.
+            weights_index <-
+              which.min(abs(x_PE / 2 - offspring_difference))
+            
+            midpoint <-
+              object@mean_surv * overall_GW +
+              (1 - overall_GW) *
+              (
+                object@mean_surv * object@GW[weights_index] +
+                  offspring_experience * object@OW[weights_index] +
+                  received_PE * object@PW[weights_index]
+              )
+            
+            return(survival(temperature, midpoint))
           })

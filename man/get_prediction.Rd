@@ -11,7 +11,7 @@ get_prediction(object, first_temp, second_temp)
 
 \item{first_temp}{Value of temperature for first fly experience.}
 
-\item{second_temp}{Value of temperature forsecond fly experience.}
+\item{second_temp}{Value of temperature for second fly experience.}
 }
 \description{
 fly method to retrieve prediction with two temperatures
