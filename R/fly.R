@@ -8,6 +8,8 @@
 #'
 #' @slot replicate The simulation replicate the fly was in.
 #' @slot population Population in which the fly was in.
+#' @slot max_PE Maximum value for the prediction interval.
+#' @slot precision Precision for all calculations.
 #' @slot PE_genes Vector of 25 values that define the PE reaction norm.
 #' @slot GW_genes Vector of 5 vales that define the GW reaction norm.
 #' @slot OW_genes Vector of 5 vales that define the OW reaction norm.
@@ -24,6 +26,8 @@ setClass(
   slots = list(
     replicate = "integer",
     population = "integer",
+    max_PE = "numeric",
+    precision = "integer",
     # PE_genes should be a vector of 25 values
     PE_genes = "numeric",
     # The following genes should be a vector of 5 values each
@@ -46,6 +50,8 @@ setClass(
   prototype = list(
     replicate = 0L,
     population = 0L,
+    max_PE = 50,
+    precision = 100L,
     # PE_genes should be a vector of 25 values
     PE_genes = rep(x = 0, times = 25),
     # The following genes should be a vector of 5 values each
@@ -70,6 +76,8 @@ setClass(
 fly <-
   function(replicate,
            population,
+           max_PE,
+           precision,
            PE_genes,
            GW_genes,
            OW_genes,
@@ -80,6 +88,8 @@ fly <-
       "fly",
       replicate = replicate,
       population = population,
+      max_PE = max_PE,
+      precision = precision,
       PE_genes = PE_genes,
       GW_genes = GW_genes,
       OW_genes = OW_genes,
@@ -95,18 +105,14 @@ fly <-
 #' @param object An object
 #' @param univar_matrix 1D matrix from rcspline.
 #' @param bivar_matrix 2D matrix from rcspline.
-#' @param max_PE Numeric value that represents the maximum PE.
 #' @param logis_k Value for the k parameter for the inverse-logit function.
 #' @param logis_x0 Value for the x0 parameter for the inverse-logit function.
-#' @param precision Value defining how precise the calculations should be.
 #' @rdname calculate_phenotype
 setGeneric("calculate_phenotype",  function(object,
                                             univar_matrix,
                                             bivar_matrix,
-                                            max_PE,
                                             logis_k,
-                                            logis_x0,
-                                            precision)
+                                            logis_x0)
   standardGeneric("calculate_phenotype"))
 
 setMethod("calculate_phenotype",
@@ -114,10 +120,8 @@ setMethod("calculate_phenotype",
           function(object,
                    univar_matrix,
                    bivar_matrix,
-                   max_PE,
                    logis_k,
-                   logis_x0,
-                   precision) {
+                   logis_x0) {
             # PE
             object@PE <-
               rcspline::logis(
@@ -173,4 +177,28 @@ setMethod("calculate_phenotype",
                 object@fecundity_genes[2],
                 object@fecundity_genes[3]
               )
+          })
+
+#' @title fly method to retrieve fecundity with temperature orr day
+#'
+#' @param object An object
+#' @param temperature Value of temperature for which to retrieve fecundity.
+#' @param day Day for which to retrieve fecundity.
+#' @rdname get_fecundity
+setGeneric("get_fecundity",  function(object,
+                                      temperature,
+                                      day)
+  standardGeneric("get_fecundity"))
+
+setMethod("get_fecundity",
+          "fly",
+          function(object, temperature = NA, day = NA){
+            if(is.na(temperature) & is.na(day)){
+              stop("get_fecundity needs either a value for temperature or for day.")
+            } else if (!is.na(temperature)){
+              egg_index <- which.min(abs(seq(0, max_PE, length = precision) - temperature))
+              return(object@egg_laying[egg_index])
+            } else if (!is.na(day)){
+              return(object@egg_laying[day])
+            }
           })

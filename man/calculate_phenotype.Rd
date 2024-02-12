@@ -4,15 +4,7 @@
 \alias{calculate_phenotype}
 \title{fly method to calculate phenotype}
 \usage{
-calculate_phenotype(
-  object,
-  univar_matrix,
-  bivar_matrix,
-  max_PE,
-  logis_k,
-  logis_x0,
-  precision
-)
+calculate_phenotype(object, univar_matrix, bivar_matrix, logis_k, logis_x0)
 }
 \arguments{
 \item{object}{An object}
@@ -21,13 +13,9 @@ calculate_phenotype(
 
 \item{bivar_matrix}{2D matrix from rcspline.}
 
-\item{max_PE}{Numeric value that represents the maximum PE.}
-
 \item{logis_k}{Value for the k parameter for the inverse-logit function.}
 
 \item{logis_x0}{Value for the x0 parameter for the inverse-logit function.}
-
-\item{precision}{Value defining how precise the calculations should be.}
 }
 \description{
 fly method to calculate phenotype
