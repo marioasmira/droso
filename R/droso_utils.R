@@ -8,9 +8,6 @@
 #' @param sd The standard deviation of the normal distribution.
 #' @param x The x value.
 #' @returns The normal pdf for x.
-#' @examples
-#' normal_pdf(0, 1, 0.5)
-#' normal_pdf(10, 3, 9)
 #' @export
 skewnormal_pdf <- function(mean, sd, x) {
   value <-  (x - mean) / sd
@@ -26,15 +23,13 @@ skewnormal_pdf <- function(mean, sd, x) {
 #' @param x The x value.
 #' @param skew The skew parameter for a skewed normal distribution.
 #' @returns The normal cdf for x.
-#' @examples
-#' normal_cdf(0, 1, 0.5, -5)
-#' normal_cdf(10, 3, 9, 2)
 #' @export
+#' @importFrom statip erf
 skewnormal_cdf <- function(mean, sd, x, skew)
 {
   value <- (x - mean) / sd
   
-  return((1 + statip::erf(skew * value / sqrt(2.0))) * 0.5)
+  return((1 + erf(skew * value / sqrt(2.0))) * 0.5)
   
 }
 
@@ -82,6 +77,7 @@ sine_wave <- function(base_env, amplitude, day, period) {
 #' @param period The period of the sine wave.
 #' @returns Returns the value of temperature of the specified day.
 #' @export
+#' @importFrom stats rnorm
 update_temperature <-
   function(temperature,
            day,
@@ -105,12 +101,13 @@ update_temperature <-
 #' @param experience The phenotype (midpoint) of the fly to be tested.
 #' @returns The probability of survival of the fly.
 #' @export
+#' @importFrom rcspline logis
 survival <- function(temperature, experience) {
-  rcspline::logis(temperature,
+  logis(temperature,
                   x_0 = experience - 9,
                   k = 1.0,
                   max = 0.8) +
-    rcspline::logis(temperature,
+    logis(temperature,
                     x_0 = experience + 9,
                     k = -1.0,
                     max = 0.8) -
@@ -154,6 +151,7 @@ round_any <-
 #' @param i The row in the dataset to calculate the correlation.
 #' @returns The correlation for the selected row.
 #' @export
+#' @importFrom stats cor
 custom_cor <- function(d, i) {
   return(cor(d[i, 1], d[i, 2], use = "complete.obs"))
 }
@@ -165,6 +163,7 @@ custom_cor <- function(d, i) {
 #' @param x A vector.
 #' @returns The standard error of the mean from the vector.
 #' @export
+#' @importFrom stats sd
 std_mean <- function(x) {
   sd(x) / sqrt(length(x))
 }

@@ -75,7 +75,20 @@ setClass(
   )
 )
 
-# Constructor method for fly
+#' Constructor method for fly
+#' 
+#' @param replicate The simulation replicate the fly was in.
+#' @param population Population in which the fly was in.
+#' @param max_PE Maximum value for the prediction interval.
+#' @param precision Precision for all calculations.
+#' @param x_PE The range of used temperatures.
+#' @param PE_genes Vector of 25 values that define the PE reaction norm.
+#' @param GW_genes Vector of 5 vales that define the GW reaction norm.
+#' @param OW_genes Vector of 5 vales that define the OW reaction norm.
+#' @param PW_genes Vector of 5 vales that define the PW reaction norm.
+#' @param mean_surv Genetic value for the survival midpoint.
+#' @param fecundity_genes Vector of 3 values that define the mean, sd and skew for fecundity.
+#' @importFrom methods new
 fly <-
   function(replicate,
            population,
@@ -113,6 +126,7 @@ fly <-
 #' @param logis_k Value for the k parameter for the inverse-logit function.
 #' @param logis_x0 Value for the x0 parameter for the inverse-logit function.
 #' @rdname calculate_phenotype
+#' @importFrom rcspline logis spline_2d spline_1d
 setGeneric("calculate_phenotype",  function(object,
                                             univar_matrix,
                                             bivar_matrix,
@@ -129,9 +143,9 @@ setMethod("calculate_phenotype",
                    logis_x0) {
             # PE
             object@PE <-
-              rcspline::logis(
-                x = rcspline::spline_2d(object@PE_genes, bivar_matrix),
-                max = max_PE,
+              logis(
+                x = spline_2d(object@PE_genes, bivar_matrix),
+                max = object@max_PE,
                 k = logis_k,
                 x_0 = logis_x0
               )
@@ -140,11 +154,11 @@ setMethod("calculate_phenotype",
             # Assigning the values directly to the final object to make it more
             # memory efficient
             object@GW <-
-              rcspline::spline_1d(object@GW_genes, univar_matrix)
+              spline_1d(object@GW_genes, univar_matrix)
             object@OW <-
-              rcspline::spline_1d(object@OW_genes, univar_matrix)
+              spline_1d(object@OW_genes, univar_matrix)
             object@PW <-
-              rcspline::spline_1d(object@PW_genes, univar_matrix)
+              spline_1d(object@PW_genes, univar_matrix)
             
             # Performing the same truncation as in the original simulation
             object@GW <- ifelse(object@GW < 0,
@@ -236,6 +250,7 @@ setMethod("get_prediction",
 #' @param offspring_error Amount of error that offspring have to measure temperature. Varies between replicates.
 #' @param overall_GW Baseline value for GW. Varies between replicates.
 #' @rdname calculate_survival
+#' @importFrom stats rnorm
 setGeneric("calculate_survival",  function(object,
                                            received_PE,
                                            temperature,
@@ -253,12 +268,12 @@ setMethod("calculate_survival",
                    overall_GW) {
             offspring_experience <- temperature + rnorm(1, sd = offspring_error)
             offspring_difference <-
-              abs(offs_experience - object@mean_surv)
+              abs(offspring_experience - object@mean_surv)
             # in a previous version, I used a different "x_" vector for weights
             # but it has the same length as x_PE with only half the max. This
             # should be equivalent.
             weights_index <-
-              which.min(abs(x_PE / 2 - offspring_difference))
+              which.min(abs(object@x_PE / 2 - offspring_difference))
             
             midpoint <-
               object@mean_surv * overall_GW +

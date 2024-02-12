@@ -19,7 +19,3 @@ The normal pdf for x.
 \description{
 Calculate the normal distribution probability density function at a specific x value.
 }
-\examples{
-normal_pdf(0, 1, 0.5)
-normal_pdf(10, 3, 9)
-}

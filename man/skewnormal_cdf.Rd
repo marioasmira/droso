@@ -21,7 +21,3 @@ The normal cdf for x.
 \description{
 Calculate the normal distribution cumulative density function at a specific x value.
 }
-\examples{
-normal_cdf(0, 1, 0.5, -5)
-normal_cdf(10, 3, 9, 2)
-}
