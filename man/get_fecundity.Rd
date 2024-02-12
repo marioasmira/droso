@@ -2,7 +2,7 @@
 % Please edit documentation in R/fly.R
 \name{get_fecundity}
 \alias{get_fecundity}
-\title{fly method to retrieve fecundity with temperature orr day}
+\title{fly method to retrieve fecundity with temperature or day}
 \usage{
 get_fecundity(object, temperature, day)
 }
@@ -14,5 +14,5 @@ get_fecundity(object, temperature, day)
 \item{day}{Day for which to retrieve fecundity.}
 }
 \description{
-fly method to retrieve fecundity with temperature orr day
+fly method to retrieve fecundity with temperature or day
 }

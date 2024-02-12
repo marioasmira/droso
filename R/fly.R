@@ -179,7 +179,7 @@ setMethod("calculate_phenotype",
               )
           })
 
-#' @title fly method to retrieve fecundity with temperature orr day
+#' @title fly method to retrieve fecundity with temperature or day
 #'
 #' @param object An object
 #' @param temperature Value of temperature for which to retrieve fecundity.
