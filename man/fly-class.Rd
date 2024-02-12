@@ -20,6 +20,8 @@ phenotype will be calculated with internal functions
 
 \item{\code{precision}}{Precision for all calculations.}
 
+\item{\code{x_PE}}{The range of used temperatures.}
+
 \item{\code{PE_genes}}{Vector of 25 values that define the PE reaction norm.}
 
 \item{\code{GW_genes}}{Vector of 5 vales that define the GW reaction norm.}

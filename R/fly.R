@@ -10,6 +10,7 @@
 #' @slot population Population in which the fly was in.
 #' @slot max_PE Maximum value for the prediction interval.
 #' @slot precision Precision for all calculations.
+#' @slot x_PE The range of used temperatures.
 #' @slot PE_genes Vector of 25 values that define the PE reaction norm.
 #' @slot GW_genes Vector of 5 vales that define the GW reaction norm.
 #' @slot OW_genes Vector of 5 vales that define the OW reaction norm.
@@ -28,6 +29,7 @@ setClass(
     population = "integer",
     max_PE = "numeric",
     precision = "integer",
+    x_PE = "numeric",
     # PE_genes should be a vector of 25 values
     PE_genes = "numeric",
     # The following genes should be a vector of 5 values each
@@ -52,6 +54,7 @@ setClass(
     population = 0L,
     max_PE = 50,
     precision = 100L,
+    x_PE = seq(0, 50, length.out = 100),
     # PE_genes should be a vector of 25 values
     PE_genes = rep(x = 0, times = 25),
     # The following genes should be a vector of 5 values each
@@ -78,6 +81,7 @@ fly <-
            population,
            max_PE,
            precision,
+           x_PE,
            PE_genes,
            GW_genes,
            OW_genes,
@@ -90,6 +94,7 @@ fly <-
       population = population,
       max_PE = max_PE,
       precision = precision,
+      x_PE = seq(0, max_PE, length.out = precision),
       PE_genes = PE_genes,
       GW_genes = GW_genes,
       OW_genes = OW_genes,
@@ -172,7 +177,7 @@ setMethod("calculate_phenotype",
             # egg_laying vector
             object@egg_laying <-
               fecundity(
-                seq(0, max_PE, length = precision),
+                object@x_PE,
                 object@fecundity_genes[1],
                 object@fecundity_genes[2],
                 object@fecundity_genes[3]
@@ -192,13 +197,33 @@ setGeneric("get_fecundity",  function(object,
 
 setMethod("get_fecundity",
           "fly",
-          function(object, temperature = NA, day = NA){
-            if(is.na(temperature) & is.na(day)){
+          function(object,
+                   temperature = NA,
+                   day = NA) {
+            if (is.na(temperature) & is.na(day)) {
               stop("get_fecundity needs either a value for temperature or for day.")
-            } else if (!is.na(temperature)){
-              egg_index <- which.min(abs(seq(0, max_PE, length = precision) - temperature))
+            } else if (!is.na(temperature)) {
+              egg_index <- which.min(abs(object@x_PE - temperature))
               return(object@egg_laying[egg_index])
-            } else if (!is.na(day)){
+            } else if (!is.na(day)) {
               return(object@egg_laying[day])
             }
+          })
+
+#' @title fly method to retrieve prediction with two temperatures
+#'
+#' @param object An object
+#' @param first_temp Value of temperature for first fly experience.
+#' @param second_temp Value of temperature forsecond fly experience.
+#' @rdname get_prediction
+setGeneric("get_prediction",  function(object,
+                                       first_temp,
+                                       second_temp)
+  standardGeneric("get_prediction"))
+
+setMethod("get_prediction",
+          "fly",
+          function(object, first_temp, second_temp) {
+            return(object@PE[which.min(abs(object@x_PE - second_temp)),
+                             which.min(abs(object@x_PE - first_temp))])
           })
