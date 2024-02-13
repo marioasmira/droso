@@ -16,7 +16,8 @@
 #' @slot OW_genes Vector of 5 vales that define the OW reaction norm.
 #' @slot PW_genes Vector of 5 vales that define the PW reaction norm.
 #' @slot mean_surv Genetic value for the survival midpoint.
-#' @slot fecundity_genes Vector of 3 values that define the mean, sd and skew for fecundity.
+#' @slot fecundity_genes Vector of 3 values that define the mean,
+#' sd and skew for fecundity.
 #' @slot PE PE reaction norm.
 #' @slot GW GW reaction norm.
 #' @slot OW OW reaction norm.
@@ -88,7 +89,8 @@ setClass(
 #' @param OW_genes Vector of 5 vales that define the OW reaction norm.
 #' @param PW_genes Vector of 5 vales that define the PW reaction norm.
 #' @param mean_surv Genetic value for the survival midpoint.
-#' @param fecundity_genes Vector of 3 values that define the mean, sd and skew for fecundity.
+#' @param fecundity_genes Vector of 3 values that define the mean,
+#' sd and skew for fecundity.
 #' @importFrom methods new
 #' @export
 fly <-
@@ -164,7 +166,8 @@ setMethod("calculate_phenotype",
                 k = logis_k,
                 x_0 = logis_x0
               )
-            # Performing the calculation beforehand instead of inside the ifelse tests.
+            # Performing the calculation beforehand instead of inside the
+            # ifelse tests.
             # Assigning the values directly to the final object to make it more
             # memory efficient
             object@GW <-
@@ -209,40 +212,29 @@ setMethod("calculate_phenotype",
             return(object)
           })
 
-#' @title fly method to retrieve fecundity with temperature or day
+#' @title fly method to retrieve fecundity with day
 #'
 #' @param object An object
-#' @param temperature Value of temperature for which to retrieve fecundity.
 #' @param day Day for which to retrieve fecundity.
-#' @returns Fecundity at the provided temperature or day of year cycle.
+#' @returns Fecundity at the provided day of year cycle.
 #' @rdname get_fecundity
 #' @export
 setGeneric("get_fecundity",  function(object,
-                                      temperature,
-                                      day)
+                    day)
   standardGeneric("get_fecundity"))
 
-#' @title fly method to retrieve fecundity with temperature or day
+#' @title fly method to retrieve fecundity with day
 #'
 #' @param object An object
-#' @param temperature Value of temperature for which to retrieve fecundity.
 #' @param day Day for which to retrieve fecundity.
-#' @returns Fecundity at the provided temperature or day of year cycle.
+#' @returns Fecundity at the provided day of year cycle.
 #' @rdname get_fecundity
 #' @export
 setMethod("get_fecundity",
           "fly",
           function(object,
-                   temperature = NA,
-                   day = NA) {
-            if (is.na(temperature) & is.na(day)) {
-              stop("get_fecundity needs either a value for temperature or for day.")
-            } else if (!is.na(temperature)) {
-              egg_index <- which.min(abs(object@x_PE - temperature))
-              return(object@egg_laying[egg_index])
-            } else if (!is.na(day)) {
-              return(object@egg_laying[day])
-            }
+                   day) {
+          return(object@egg_laying[day])
           })
 
 #' @title fly method to retrieve prediction with two temperatures
@@ -278,7 +270,8 @@ setMethod("get_prediction",
 #' @param object An object
 #' @param received_PE Prediction received by the mother.
 #' @param temperature Value of temperature.
-#' @param offspring_error Amount of error that offspring have to measure temperature. Varies between replicates.
+#' @param offspring_error Amount of error that offspring have to measure
+#' temperature. Varies between replicates.
 #' @param overall_GW Baseline value for GW. Varies between replicates.
 #' @returns The survival according to temperature, prediction and phenotype.
 #' @rdname calculate_survival
@@ -296,7 +289,8 @@ setGeneric("calculate_survival",  function(object,
 #' @param object An object
 #' @param received_PE Prediction received by the mother.
 #' @param temperature Value of temperature.
-#' @param offspring_error Amount of error that offspring have to measure temperature. Varies between replicates.
+#' @param offspring_error Amount of error that offspring have to measure
+#' temperature. Varies between replicates.
 #' @param overall_GW Baseline value for GW. Varies between replicates.
 #' @returns The survival according to temperature, prediction and phenotype.
 #' @rdname calculate_survival

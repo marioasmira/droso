@@ -32,7 +32,8 @@ phenotype will be calculated with internal functions
 
 \item{\code{mean_surv}}{Genetic value for the survival midpoint.}
 
-\item{\code{fecundity_genes}}{Vector of 3 values that define the mean, sd and skew for fecundity.}
+\item{\code{fecundity_genes}}{Vector of 3 values that define the mean,
+sd and skew for fecundity.}
 
 \item{\code{PE}}{PE reaction norm.}
 

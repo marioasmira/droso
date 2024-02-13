@@ -39,7 +39,8 @@ fly(
 
 \item{mean_surv}{Genetic value for the survival midpoint.}
 
-\item{fecundity_genes}{Vector of 3 values that define the mean, sd and skew for fecundity.}
+\item{fecundity_genes}{Vector of 3 values that define the mean,
+sd and skew for fecundity.}
 }
 \description{
 Constructor method for fly

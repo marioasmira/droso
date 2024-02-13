@@ -28,7 +28,8 @@ calculate_survival(
 
 \item{temperature}{Value of temperature.}
 
-\item{offspring_error}{Amount of error that offspring have to measure temperature. Varies between replicates.}
+\item{offspring_error}{Amount of error that offspring have to measure
+temperature. Varies between replicates.}
 
 \item{overall_GW}{Baseline value for GW. Varies between replicates.}
 }

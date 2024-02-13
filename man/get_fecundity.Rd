@@ -3,26 +3,24 @@
 \name{get_fecundity}
 \alias{get_fecundity}
 \alias{get_fecundity,fly-method}
-\title{fly method to retrieve fecundity with temperature or day}
+\title{fly method to retrieve fecundity with day}
 \usage{
-get_fecundity(object, temperature, day)
+get_fecundity(object, day)
 
-\S4method{get_fecundity}{fly}(object, temperature = NA, day = NA)
+\S4method{get_fecundity}{fly}(object, day)
 }
 \arguments{
 \item{object}{An object}
 
-\item{temperature}{Value of temperature for which to retrieve fecundity.}
-
 \item{day}{Day for which to retrieve fecundity.}
 }
 \value{
-Fecundity at the provided temperature or day of year cycle.
+Fecundity at the provided day of year cycle.
 
-Fecundity at the provided temperature or day of year cycle.
+Fecundity at the provided day of year cycle.
 }
 \description{
-fly method to retrieve fecundity with temperature or day
+fly method to retrieve fecundity with day
 
-fly method to retrieve fecundity with temperature or day
+fly method to retrieve fecundity with day
 }
