@@ -9,16 +9,18 @@ calculate_survival(
   object,
   received_PE,
   temperature,
-  offspring_error,
-  overall_GW
+  offspring_error = NULL,
+  overall_GW,
+  presampled_error = NULL
 )
 
 \S4method{calculate_survival}{fly}(
   object,
   received_PE,
   temperature,
-  offspring_error,
-  overall_GW
+  offspring_error = NULL,
+  overall_GW,
+  presampled_error = NULL
 )
 }
 \arguments{
@@ -32,6 +34,9 @@ calculate_survival(
 temperature. Varies between replicates.}
 
 \item{overall_GW}{Baseline value for GW. Varies between replicates.}
+
+\item{presampled_error}{Pre-sampled error in cases where randomness will
+be re-used}
 }
 \value{
 The survival according to temperature, prediction and phenotype.

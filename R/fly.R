@@ -273,6 +273,8 @@ setMethod("get_prediction",
 #' @param offspring_error Amount of error that offspring have to measure
 #' temperature. Varies between replicates.
 #' @param overall_GW Baseline value for GW. Varies between replicates.
+#' @param presampled_error Pre-sampled error in cases where randomness will
+#' be re-used
 #' @returns The survival according to temperature, prediction and phenotype.
 #' @rdname calculate_survival
 #' @importFrom stats rnorm
@@ -280,8 +282,9 @@ setMethod("get_prediction",
 setGeneric("calculate_survival",  function(object,
                                            received_PE,
                                            temperature,
-                                           offspring_error,
-                                           overall_GW)
+                                           offspring_error = NULL,
+                                           overall_GW,
+                                           presampled_error = NULL)
   standardGeneric("calculate_survival"))
 
 #' @title fly method to calculate survival of flies
@@ -292,6 +295,8 @@ setGeneric("calculate_survival",  function(object,
 #' @param offspring_error Amount of error that offspring have to measure
 #' temperature. Varies between replicates.
 #' @param overall_GW Baseline value for GW. Varies between replicates.
+#' @param presampled_error Pre-sampled error in cases where randomness will
+#' be re-used
 #' @returns The survival according to temperature, prediction and phenotype.
 #' @rdname calculate_survival
 #' @importFrom stats rnorm
@@ -301,10 +306,17 @@ setMethod("calculate_survival",
           function(object,
                    received_PE,
                    temperature,
-                   offspring_error,
-                   overall_GW) {
-            offspring_experience <- temperature +
-              rnorm(length(temperature), sd = offspring_error)
+                   offspring_error = NULL,
+                   overall_GW,
+                   presampled_error = NULL) {
+            if (is.null(presampled_error)) {
+              offspring_experience <- temperature +
+                rnorm(length(temperature), sd = offspring_error)
+            } else if (is.null(offspring_error)) {
+              offspring_experience <- temperature + presampled_error
+            } else {
+              stop("Both sources of error are NULL. Needs at least one.")
+            }
             offspring_difference <-
               abs(offspring_experience - object@mean_surv)
             # in a previous version, I used a different "x_" vector for weights
