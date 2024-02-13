@@ -30,7 +30,7 @@ setClass(
     replicate = "integer",
     population = "integer",
     max_PE = "numeric",
-    precision = "integer",
+    precision = "numeric",
     x_PE = "numeric",
     # PE_genes should be a vector of 25 values
     PE_genes = "numeric",
@@ -55,7 +55,7 @@ setClass(
     replicate = 0L,
     population = 0L,
     max_PE = 50,
-    precision = 100L,
+    precision = 100,
     x_PE = seq(0, 50, length.out = 100),
     # PE_genes should be a vector of 25 values
     PE_genes = rep(x = 0, times = 25),
@@ -261,8 +261,19 @@ setGeneric("get_prediction",  function(object,
 setMethod("get_prediction",
           "fly",
           function(object, first_temp, second_temp) {
-            return(object@PE[which.min(abs(object@x_PE - second_temp)),
-                             which.min(abs(object@x_PE - first_temp))])
+            if (length(first_temp) != length(second_temp)) {
+              stop("The two temperature objects don't have the same length.")
+            } else{
+              output <- numeric()
+              for (i in 1:length(first_temp)) {
+                output <- c(
+                  output,
+                  object@PE[which.min(abs(object@x_PE - second_temp[i])),
+                            which.min(abs(object@x_PE - first_temp[i]))]
+                )
+              }
+              return(output)
+            }
           })
 
 #' @title fly method to calculate survival of flies
