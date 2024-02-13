@@ -303,7 +303,8 @@ setMethod("calculate_survival",
                    temperature,
                    offspring_error,
                    overall_GW) {
-            offspring_experience <- temperature + rnorm(1, sd = offspring_error)
+            offspring_experience <- temperature +
+              rnorm(length(temperature), sd = offspring_error)
             offspring_difference <-
               abs(offspring_experience - object@mean_surv)
             # in a previous version, I used a different "x_" vector for weights
