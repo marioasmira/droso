@@ -195,3 +195,6 @@ generate_reps <- function(rep_group) {
 arcsinsqrt <- function(x) {
   return(asin(sqrt(x)))
 }
+
+#' @export 
+`%notin%` <- Negate(`%in%`)

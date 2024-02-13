@@ -215,26 +215,34 @@ setMethod("calculate_phenotype",
 #' @title fly method to retrieve fecundity with day
 #'
 #' @param object An object
-#' @param day Day for which to retrieve fecundity.
-#' @returns Fecundity at the provided day of year cycle.
+#' @param temperature Temperature for which to retrieve fecundity.
+#' @returns Fecundity at the provided temperature.
 #' @rdname get_fecundity
 #' @export
-setGeneric("get_fecundity",  function(object,
-                    day)
+setGeneric("get_fecundity", function(object,
+                   temperature)
   standardGeneric("get_fecundity"))
 
 #' @title fly method to retrieve fecundity with day
 #'
 #' @param object An object
-#' @param day Day for which to retrieve fecundity.
-#' @returns Fecundity at the provided day of year cycle.
+#' @param temperature Temperature for which to retrieve fecundity.
+#' @returns Fecundity at the provided temperature.
 #' @rdname get_fecundity
 #' @export
 setMethod("get_fecundity",
           "fly",
           function(object,
-                   day) {
-          return(object@egg_laying[day])
+                   temperature) {
+            output <- numeric()
+            for (i in 1:length(temperature)) {
+              output <- c(output,
+                object@egg_laying[
+                  which.min(abs(object@x_PE - temperature[i]))
+                ]
+              )
+            }
+            return(output)
           })
 
 #' @title fly method to retrieve prediction with two temperatures
@@ -333,15 +341,91 @@ setMethod("calculate_survival",
             # in a previous version, I used a different "x_" vector for weights
             # but it has the same length as x_PE with only half the max. This
             # should be equivalent.
-            weights_index <-
-              which.min(abs(object@x_PE / 2 - offspring_difference))
+            weights_indices <- numeric()
+            for (i in length(offspring_difference)) {
+              weights_indices <- c(weights_indices,
+                which.min(abs((object@x_PE / 2) - offspring_difference[i]))
+              )
+            }
             midpoint <-
               object@mean_surv * overall_GW +
               (1 - overall_GW) *
               (
-                object@mean_surv * object@GW[weights_index] +
-                  offspring_experience * object@OW[weights_index] +
-                  received_PE * object@PW[weights_index]
+                object@mean_surv * object@GW[weights_indices] +
+                offspring_experience * object@OW[weights_indices] +
+                received_PE * object@PW[weights_indices]
               )
             return(survival(temperature, midpoint))
+          })
+
+
+#' @title fly method to retrieve information weights
+#'
+#' @param object An object
+#' @param temperature Value of temperature.
+#' @param weight Which weight to retrive. "GW", "OW", or "PW".
+#' @param offspring_error Amount of error that offspring have to measure
+#' temperature. Varies between replicates.
+#' @param presampled_error Pre-sampled error in cases where randomness will
+#' be re-used
+#' @returns The information weight requested for the provided temperature.
+#' @rdname get_weight
+#' @importFrom stats rnorm
+#' @export
+setGeneric("get_weight",  function(object,
+                                   temperature,
+                                   weight,
+                                   offspring_error = NULL,
+                                   presampled_error = NULL)
+             standardGeneric("get_weight"))
+
+#' @title fly method to retrieve information weights
+#'
+#' @param object An object
+#' @param temperature Value of temperature.
+#' @param weight Which weight to retrive. "GW", "OW", or "PW".
+#' @param offspring_error Amount of error that offspring have to measure
+#' temperature. Varies between replicates.
+#' @param presampled_error Pre-sampled error in cases where randomness will
+#' be re-used
+#' @returns The information weight requested for the provided temperature.
+#' @rdname get_weight
+#' @importFrom stats rnorm
+#' @export
+setMethod("get_weight",
+          "fly",
+          function(object,
+                   temperature,
+                   weight,
+                   offspring_error = NULL,
+                   presampled_error = NULL) {
+            if (!(weight %in% c("GW", "OW", "PW"))) {
+              stop("Specified weight should be \"GW\", \"OW\", or \"PW\".")
+            }
+            if (is.null(presampled_error)) {
+              offspring_experience <- temperature +
+                rnorm(length(temperature), sd = offspring_error)
+            } else if (is.null(offspring_error)) {
+              offspring_experience <- temperature + presampled_error
+            } else {
+              stop("Both sources of error are NULL. Needs at least one.")
+            }
+            offspring_difference <-
+              abs(offspring_experience - object@mean_surv)
+            # in a previous version, I used a different "x_" vector for weights
+            # but it has the same length as x_PE with only half the max. This
+            # should be equivalent.
+            weights_indices <- numeric()
+            for (i in 1:length(offspring_difference)) {
+              weights_indices <- c(weights_indices,
+                which.min(abs((object@x_PE / 2) - offspring_difference[i]))
+              )
+            }
+            if (weight == "GW") {
+              return(object@GW[weights_indices])
+            } else if (weight == "OW") {
+              return(object@OW[weights_indices])
+            } else if (weight == "PW") {
+              return(object@PW[weights_indices])
+            }
           })
