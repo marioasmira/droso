@@ -22,6 +22,7 @@
 #' @slot OW OW reaction norm.
 #' @slot PW PW reaction norm.
 #' @slot egg_laying Reaction for egg laying.
+#' @export
 setClass(
   "fly",
   slots = list(
@@ -89,6 +90,7 @@ setClass(
 #' @param mean_surv Genetic value for the survival midpoint.
 #' @param fecundity_genes Vector of 3 values that define the mean, sd and skew for fecundity.
 #' @importFrom methods new
+#' @export
 fly <-
   function(replicate,
            population,
@@ -125,8 +127,10 @@ fly <-
 #' @param bivar_matrix 2D matrix from rcspline.
 #' @param logis_k Value for the k parameter for the inverse-logit function.
 #' @param logis_x0 Value for the x0 parameter for the inverse-logit function.
+#' @returns The same object but modified to have a calculated phenotype.
 #' @rdname calculate_phenotype
 #' @importFrom rcspline logis spline_2d spline_1d
+#' @export
 setGeneric("calculate_phenotype",  function(object,
                                             univar_matrix,
                                             bivar_matrix,
@@ -134,6 +138,17 @@ setGeneric("calculate_phenotype",  function(object,
                                             logis_x0)
   standardGeneric("calculate_phenotype"))
 
+#' @title fly method to calculate phenotype
+#'
+#' @param object An object
+#' @param univar_matrix 1D matrix from rcspline.
+#' @param bivar_matrix 2D matrix from rcspline.
+#' @param logis_k Value for the k parameter for the inverse-logit function.
+#' @param logis_x0 Value for the x0 parameter for the inverse-logit function.
+#' @returns The same object but modified to have a calculated phenotype.
+#' @rdname calculate_phenotype
+#' @importFrom rcspline logis spline_2d spline_1d
+#' @export
 setMethod("calculate_phenotype",
           "fly",
           function(object,
@@ -149,7 +164,6 @@ setMethod("calculate_phenotype",
                 k = logis_k,
                 x_0 = logis_x0
               )
-            
             # Performing the calculation beforehand instead of inside the ifelse tests.
             # Assigning the values directly to the final object to make it more
             # memory efficient
@@ -159,7 +173,6 @@ setMethod("calculate_phenotype",
               spline_1d(object@OW_genes, univar_matrix)
             object@PW <-
               spline_1d(object@PW_genes, univar_matrix)
-            
             # Performing the same truncation as in the original simulation
             object@GW <- ifelse(object@GW < 0,
                                 0,
@@ -176,9 +189,7 @@ setMethod("calculate_phenotype",
                                 ifelse(object@PW > 1000,
                                        1000,
                                        object@PW))
-            
             weight_sum <- object@GW + object@OW + object@PW
-            
             # Testing for NaN because in some situations some division by zero
             ## can happen. Simply replacing with 0 seems to work
             object@GW <-
@@ -187,7 +198,6 @@ setMethod("calculate_phenotype",
               ifelse(is.nan(object@OW / weight_sum), 0, object@OW / weight_sum)
             object@PW <-
               ifelse(is.nan(object@PW / weight_sum), 0, object@PW / weight_sum)
-            
             # egg_laying vector
             object@egg_laying <-
               fecundity(
@@ -196,6 +206,7 @@ setMethod("calculate_phenotype",
                 object@fecundity_genes[2],
                 object@fecundity_genes[3]
               )
+            return(object)
           })
 
 #' @title fly method to retrieve fecundity with temperature or day
@@ -203,12 +214,22 @@ setMethod("calculate_phenotype",
 #' @param object An object
 #' @param temperature Value of temperature for which to retrieve fecundity.
 #' @param day Day for which to retrieve fecundity.
+#' @returns Fecundity at the provided temperature or day of year cycle.
 #' @rdname get_fecundity
+#' @export
 setGeneric("get_fecundity",  function(object,
                                       temperature,
                                       day)
   standardGeneric("get_fecundity"))
 
+#' @title fly method to retrieve fecundity with temperature or day
+#'
+#' @param object An object
+#' @param temperature Value of temperature for which to retrieve fecundity.
+#' @param day Day for which to retrieve fecundity.
+#' @returns Fecundity at the provided temperature or day of year cycle.
+#' @rdname get_fecundity
+#' @export
 setMethod("get_fecundity",
           "fly",
           function(object,
@@ -229,12 +250,22 @@ setMethod("get_fecundity",
 #' @param object An object
 #' @param first_temp Value of temperature for first fly experience.
 #' @param second_temp Value of temperature for second fly experience.
+#' @returns The prediction from the reaction norm.
 #' @rdname get_prediction
+#' @export
 setGeneric("get_prediction",  function(object,
                                        first_temp,
                                        second_temp)
   standardGeneric("get_prediction"))
 
+#' @title fly method to retrieve prediction with two temperatures
+#'
+#' @param object An object
+#' @param first_temp Value of temperature for first fly experience.
+#' @param second_temp Value of temperature for second fly experience.
+#' @returns The prediction from the reaction norm.
+#' @rdname get_prediction
+#' @export
 setMethod("get_prediction",
           "fly",
           function(object, first_temp, second_temp) {
@@ -249,8 +280,10 @@ setMethod("get_prediction",
 #' @param temperature Value of temperature.
 #' @param offspring_error Amount of error that offspring have to measure temperature. Varies between replicates.
 #' @param overall_GW Baseline value for GW. Varies between replicates.
+#' @returns The survival according to temperature, prediction and phenotype.
 #' @rdname calculate_survival
 #' @importFrom stats rnorm
+#' @export
 setGeneric("calculate_survival",  function(object,
                                            received_PE,
                                            temperature,
@@ -258,7 +291,17 @@ setGeneric("calculate_survival",  function(object,
                                            overall_GW)
   standardGeneric("calculate_survival"))
 
-
+#' @title fly method to calculate survival of flies
+#'
+#' @param object An object
+#' @param received_PE Prediction received by the mother.
+#' @param temperature Value of temperature.
+#' @param offspring_error Amount of error that offspring have to measure temperature. Varies between replicates.
+#' @param overall_GW Baseline value for GW. Varies between replicates.
+#' @returns The survival according to temperature, prediction and phenotype.
+#' @rdname calculate_survival
+#' @importFrom stats rnorm
+#' @export
 setMethod("calculate_survival",
           "fly",
           function(object,
@@ -274,7 +317,6 @@ setMethod("calculate_survival",
             # should be equivalent.
             weights_index <-
               which.min(abs(object@x_PE / 2 - offspring_difference))
-            
             midpoint <-
               object@mean_surv * overall_GW +
               (1 - overall_GW) *
@@ -283,6 +325,5 @@ setMethod("calculate_survival",
                   offspring_experience * object@OW[weights_index] +
                   received_PE * object@PW[weights_index]
               )
-            
             return(survival(temperature, midpoint))
           })

@@ -2,9 +2,12 @@
 % Please edit documentation in R/fly.R
 \name{get_prediction}
 \alias{get_prediction}
+\alias{get_prediction,fly-method}
 \title{fly method to retrieve prediction with two temperatures}
 \usage{
 get_prediction(object, first_temp, second_temp)
+
+\S4method{get_prediction}{fly}(object, first_temp, second_temp)
 }
 \arguments{
 \item{object}{An object}
@@ -13,6 +16,13 @@ get_prediction(object, first_temp, second_temp)
 
 \item{second_temp}{Value of temperature for second fly experience.}
 }
+\value{
+The prediction from the reaction norm.
+
+The prediction from the reaction norm.
+}
 \description{
+fly method to retrieve prediction with two temperatures
+
 fly method to retrieve prediction with two temperatures
 }

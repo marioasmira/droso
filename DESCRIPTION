@@ -5,7 +5,6 @@ Authors@R:
     person("Mário", "Mira", , "marioasmira@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5185-6851"))
 Description: This package includes utility functions and a class to facilitate the analysis of a specific simulation study of the evolution of anticipatory parental effects on Drosophila melanogaster.
-License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
@@ -13,3 +12,4 @@ Suggests:
     testthat (>= 3.0.0)
 Imports: rcspline, statip, methods
 Config/testthat/edition: 3
+License: MIT + file LICENSE

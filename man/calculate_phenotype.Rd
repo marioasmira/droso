@@ -2,9 +2,12 @@
 % Please edit documentation in R/fly.R
 \name{calculate_phenotype}
 \alias{calculate_phenotype}
+\alias{calculate_phenotype,fly-method}
 \title{fly method to calculate phenotype}
 \usage{
 calculate_phenotype(object, univar_matrix, bivar_matrix, logis_k, logis_x0)
+
+\S4method{calculate_phenotype}{fly}(object, univar_matrix, bivar_matrix, logis_k, logis_x0)
 }
 \arguments{
 \item{object}{An object}
@@ -17,6 +20,13 @@ calculate_phenotype(object, univar_matrix, bivar_matrix, logis_k, logis_x0)
 
 \item{logis_x0}{Value for the x0 parameter for the inverse-logit function.}
 }
+\value{
+The same object but modified to have a calculated phenotype.
+
+The same object but modified to have a calculated phenotype.
+}
 \description{
+fly method to calculate phenotype
+
 fly method to calculate phenotype
 }

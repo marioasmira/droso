@@ -2,9 +2,18 @@
 % Please edit documentation in R/fly.R
 \name{calculate_survival}
 \alias{calculate_survival}
+\alias{calculate_survival,fly-method}
 \title{fly method to calculate survival of flies}
 \usage{
 calculate_survival(
+  object,
+  received_PE,
+  temperature,
+  offspring_error,
+  overall_GW
+)
+
+\S4method{calculate_survival}{fly}(
   object,
   received_PE,
   temperature,
@@ -23,6 +32,13 @@ calculate_survival(
 
 \item{overall_GW}{Baseline value for GW. Varies between replicates.}
 }
+\value{
+The survival according to temperature, prediction and phenotype.
+
+The survival according to temperature, prediction and phenotype.
+}
 \description{
+fly method to calculate survival of flies
+
 fly method to calculate survival of flies
 }
