@@ -27,8 +27,8 @@
 setClass(
   "fly",
   slots = list(
-    replicate = "integer",
-    population = "integer",
+    replicate = "numeric",
+    population = "numeric",
     max_PE = "numeric",
     precision = "numeric",
     x_PE = "numeric",
@@ -52,8 +52,8 @@ setClass(
   ),
   # Default fly
   prototype = list(
-    replicate = 0L,
-    population = 0L,
+    replicate = 0,
+    population = 0,
     max_PE = 50,
     precision = 100,
     x_PE = seq(0, 50, length.out = 100),
