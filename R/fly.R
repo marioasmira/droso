@@ -201,14 +201,6 @@ setMethod("calculate_phenotype",
               ifelse(is.nan(object@OW / weight_sum), 0, object@OW / weight_sum)
             object@PW <-
               ifelse(is.nan(object@PW / weight_sum), 0, object@PW / weight_sum)
-            # egg_laying vector
-            object@egg_laying <-
-              fecundity(
-                object@x_PE,
-                object@fecundity_genes[1],
-                object@fecundity_genes[2],
-                object@fecundity_genes[3]
-              )
             return(object)
           })
 
@@ -235,11 +227,15 @@ setMethod("get_fecundity",
           function(object,
                    temperature) {
             output <- numeric()
-            for (i in 1:length(temperature)) {
+            for (i in seq_along(temperature)) {
               output <- c(output,
-                object@egg_laying[
-                  which.min(abs(object@x_PE - temperature[i]))
-                ]
+                # egg_laying vector
+                fecundity(
+                  i,
+                  object@fecundity_genes[1],
+                  object@fecundity_genes[2],
+                  object@fecundity_genes[3]
+                )
               )
             }
             return(output)
@@ -273,7 +269,7 @@ setMethod("get_prediction",
               stop("The two temperature objects don't have the same length.")
             } else{
               output <- numeric()
-              for (i in 1:length(first_temp)) {
+              for (i in seq_along(first_temp)) {
                 output <- c(
                   output,
                   object@PE[which.min(abs(object@x_PE - second_temp[i])),
@@ -416,7 +412,7 @@ setMethod("get_weight",
             # but it has the same length as x_PE with only half the max. This
             # should be equivalent.
             weights_indices <- numeric()
-            for (i in 1:length(offspring_difference)) {
+            for (i in seq_along(offspring_difference)) {
               weights_indices <- c(weights_indices,
                 which.min(abs((object@x_PE / 2) - offspring_difference[i]))
               )
