@@ -235,7 +235,7 @@ setMethod("get_fecundity",
           function(object,
                    temperature) {
             output <- numeric()
-            for (i in 1:length(temperature)) {
+            for (i in seq_along(temperature)) {
               output <- c(output,
                 object@egg_laying[
                   which.min(abs(object@x_PE - temperature[i]))
@@ -273,7 +273,7 @@ setMethod("get_prediction",
               stop("The two temperature objects don't have the same length.")
             } else{
               output <- numeric()
-              for (i in 1:length(first_temp)) {
+              for (i in seq_along(first_temp)) {
                 output <- c(
                   output,
                   object@PE[which.min(abs(object@x_PE - second_temp[i])),
@@ -416,7 +416,7 @@ setMethod("get_weight",
             # but it has the same length as x_PE with only half the max. This
             # should be equivalent.
             weights_indices <- numeric()
-            for (i in 1:length(offspring_difference)) {
+            for (i in seq_along(offspring_difference)) {
               weights_indices <- c(weights_indices,
                 which.min(abs((object@x_PE / 2) - offspring_difference[i]))
               )
