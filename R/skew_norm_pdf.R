@@ -35,6 +35,7 @@ normal_cdf <- function(x) {
 #' @returns The normal pdf for x.
 #' @export
 skew_normal_pdf <- function(x, mean, sd, skew) {
+    stopifnot(sd > 0)
     value <- (x - mean) / sd
     pdf <- normal_pdf(value)
     cdf <- normal_cdf(value * skew)
