@@ -1,54 +1,5 @@
 # droso_utils.R
 
-#' Skew normal distribution pdf
-#' @description
-#' Calculate the normal distribution probability density function at a specific x value.
-#'
-#' @param mean The mean of the normal distribution.
-#' @param sd The standard deviation of the normal distribution.
-#' @param x The x value.
-#' @returns The normal pdf for x.
-#' @export
-skewnormal_pdf <- function(mean, sd, x) {
-  value <-  (x - mean) / sd
-  exp(-(value ^ 2) / 2) / sqrt(2 * pi)
-}
-
-#' Skew normal distribution cdf
-#' @description
-#' Calculate the normal distribution cumulative density function at a specific x value.
-#'
-#' @param mean The mean of the normal distribution.
-#' @param sd The standard deviation of the normal distribution.
-#' @param x The x value.
-#' @param skew The skew parameter for a skewed normal distribution.
-#' @returns The normal cdf for x.
-#' @export
-#' @importFrom statip erf
-skewnormal_cdf <- function(mean, sd, x, skew)
-{
-  value <- (x - mean) / sd
-  
-  return((1 + erf(skew * value / sqrt(2.0))) * 0.5)
-  
-}
-
-#' Fly fecundity
-#' @description
-#' Calculate the fecundity of a fly by calculating a skewed normal pdf.
-#'
-#' @param x Value of x to calculate the fecundity.
-#' @param mean The mean of the normal distribution.
-#' @param sd The standard deviation of the normal distribution.
-#' @param skew The skew parameter for a skewed normal distribution.
-#' @returns Returns the value of fecundity for x.
-#' @export
-fecundity <- function(x, mean, sd, skew) {
-  pdf <- skewnormal_pdf(mean, sd, x)
-  cdf <- skewnormal_cdf(mean, sd, x, skew)
-  return(800 * 2 / sd * pdf * cdf)
-}
-
 #' Sine wave
 #' @description
 #' Calculates the sine value at point x. Incorporates a base value, amplitude,

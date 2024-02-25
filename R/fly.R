@@ -202,8 +202,9 @@ setMethod("calculate_phenotype",
             object@PW <-
               ifelse(is.nan(object@PW / weight_sum), 0, object@PW / weight_sum)
             # egg_laying vector
+            # 800 is used as a scale for the maximum number of eggs at the start
             object@egg_laying <-
-              fecundity(
+              800 * skew_normal_pdf(
                 object@x_PE,
                 object@fecundity_genes[1],
                 object@fecundity_genes[2],
