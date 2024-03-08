@@ -78,7 +78,7 @@ setClass(
 )
 
 #' Constructor method for fly
-#' 
+#'
 #' @param replicate The simulation replicate the fly was in.
 #' @param population Population in which the fly was in.
 #' @param max_PE Maximum value for the prediction interval.
@@ -133,12 +133,13 @@ fly <-
 #' @rdname calculate_phenotype
 #' @importFrom rcspline logis spline_2d spline_1d
 #' @export
-setGeneric("calculate_phenotype",  function(object,
-                                            univar_matrix,
-                                            bivar_matrix,
-                                            logis_k,
-                                            logis_x0)
-  standardGeneric("calculate_phenotype"))
+setGeneric("calculate_phenotype", function(object,
+                                           univar_matrix,
+                                           bivar_matrix,
+                                           logis_k,
+                                           logis_x0) {
+  standardGeneric("calculate_phenotype")
+})
 
 #' @title fly method to calculate phenotype
 #'
@@ -151,67 +152,75 @@ setGeneric("calculate_phenotype",  function(object,
 #' @rdname calculate_phenotype
 #' @importFrom rcspline logis spline_2d spline_1d
 #' @export
-setMethod("calculate_phenotype",
-          "fly",
-          function(object,
-                   univar_matrix,
-                   bivar_matrix,
-                   logis_k,
-                   logis_x0) {
-            # PE
-            object@PE <-
-              logis(
-                x = spline_2d(object@PE_genes, bivar_matrix),
-                max = object@max_PE,
-                k = logis_k,
-                x_0 = logis_x0
-              )
-            # Performing the calculation beforehand instead of inside the
-            # ifelse tests.
-            # Assigning the values directly to the final object to make it more
-            # memory efficient
-            object@GW <-
-              spline_1d(object@GW_genes, univar_matrix)
-            object@OW <-
-              spline_1d(object@OW_genes, univar_matrix)
-            object@PW <-
-              spline_1d(object@PW_genes, univar_matrix)
-            # Performing the same truncation as in the original simulation
-            object@GW <- ifelse(object@GW < 0,
-                                0,
-                                ifelse(object@GW > 1000,
-                                       1000,
-                                       object@GW))
-            object@OW <- ifelse(object@OW < 0,
-                                0,
-                                ifelse(object@OW > 1000,
-                                       1000,
-                                       object@OW))
-            object@PW <- ifelse(object@PW < 0,
-                                0,
-                                ifelse(object@PW > 1000,
-                                       1000,
-                                       object@PW))
-            weight_sum <- object@GW + object@OW + object@PW
-            # Testing for NaN because in some situations some division by zero
-            ## can happen. Simply replacing with 0 seems to work
-            object@GW <-
-              ifelse(is.nan(object@GW / weight_sum), 0, object@GW / weight_sum)
-            object@OW <-
-              ifelse(is.nan(object@OW / weight_sum), 0, object@OW / weight_sum)
-            object@PW <-
-              ifelse(is.nan(object@PW / weight_sum), 0, object@PW / weight_sum)
-            # egg_laying vector
-            # 800 is used as a scale for the maximum number of eggs at the start
-            object@egg_laying <-
-              800 * skew_normal_pdf(
-                object@x_PE,
-                object@fecundity_genes[1],
-                object@fecundity_genes[2],
-                object@fecundity_genes[3]
-              )
-            return(object)
-          })
+setMethod(
+  "calculate_phenotype",
+  "fly",
+  function(object,
+           univar_matrix,
+           bivar_matrix,
+           logis_k,
+           logis_x0) {
+    # PE
+    object@PE <-
+      logis(
+        x = spline_2d(object@PE_genes, bivar_matrix),
+        max = object@max_PE,
+        k = logis_k,
+        x_0 = logis_x0
+      )
+    # Performing the calculation beforehand instead of inside the
+    # ifelse tests.
+    # Assigning the values directly to the final object to make it more
+    # memory efficient
+    object@GW <-
+      spline_1d(object@GW_genes, univar_matrix)
+    object@OW <-
+      spline_1d(object@OW_genes, univar_matrix)
+    object@PW <-
+      spline_1d(object@PW_genes, univar_matrix)
+    # Performing the same truncation as in the original simulation
+    object@GW <- ifelse(object@GW < 0,
+      0,
+      ifelse(object@GW > 1000,
+        1000,
+        object@GW
+      )
+    )
+    object@OW <- ifelse(object@OW < 0,
+      0,
+      ifelse(object@OW > 1000,
+        1000,
+        object@OW
+      )
+    )
+    object@PW <- ifelse(object@PW < 0,
+      0,
+      ifelse(object@PW > 1000,
+        1000,
+        object@PW
+      )
+    )
+    weight_sum <- object@GW + object@OW + object@PW
+    # Testing for NaN because in some situations some division by zero
+    ## can happen. Simply replacing with 0 seems to work
+    object@GW <-
+      ifelse(is.nan(object@GW / weight_sum), 0, object@GW / weight_sum)
+    object@OW <-
+      ifelse(is.nan(object@OW / weight_sum), 0, object@OW / weight_sum)
+    object@PW <-
+      ifelse(is.nan(object@PW / weight_sum), 0, object@PW / weight_sum)
+    # egg_laying vector
+    # 800 is used as a scale for the maximum number of eggs at the start
+    object@egg_laying <-
+      800 * skew_normal_pdf(
+        object@x_PE,
+        object@fecundity_genes[1],
+        object@fecundity_genes[2],
+        object@fecundity_genes[3]
+      )
+    return(object)
+  }
+)
 
 #' @title fly method to retrieve fecundity with day
 #'
@@ -221,8 +230,9 @@ setMethod("calculate_phenotype",
 #' @rdname get_fecundity
 #' @export
 setGeneric("get_fecundity", function(object,
-                   temperature)
-  standardGeneric("get_fecundity"))
+                                     temperature) {
+  standardGeneric("get_fecundity")
+})
 
 #' @title fly method to retrieve fecundity with day
 #'
@@ -231,20 +241,23 @@ setGeneric("get_fecundity", function(object,
 #' @returns Fecundity at the provided temperature.
 #' @rdname get_fecundity
 #' @export
-setMethod("get_fecundity",
-          "fly",
-          function(object,
-                   temperature) {
-            output <- numeric()
-            for (i in seq_along(temperature)) {
-              output <- c(output,
-                object@egg_laying[
-                  which.min(abs(object@x_PE - temperature[i]))
-                ]
-              )
-            }
-            return(output)
-          })
+setMethod(
+  "get_fecundity",
+  "fly",
+  function(object,
+           temperature) {
+    output <- numeric()
+    for (i in seq_along(temperature)) {
+      output <- c(
+        output,
+        object@egg_laying[
+          which.min(abs(object@x_PE - temperature[i]))
+        ]
+      )
+    }
+    return(output)
+  }
+)
 
 #' @title fly method to retrieve prediction with two temperatures
 #'
@@ -254,10 +267,11 @@ setMethod("get_fecundity",
 #' @returns The prediction from the reaction norm.
 #' @rdname get_prediction
 #' @export
-setGeneric("get_prediction",  function(object,
-                                       first_temp,
-                                       second_temp)
-  standardGeneric("get_prediction"))
+setGeneric("get_prediction", function(object,
+                                      first_temp,
+                                      second_temp) {
+  standardGeneric("get_prediction")
+})
 
 #' @title fly method to retrieve prediction with two temperatures
 #'
@@ -267,23 +281,27 @@ setGeneric("get_prediction",  function(object,
 #' @returns The prediction from the reaction norm.
 #' @rdname get_prediction
 #' @export
-setMethod("get_prediction",
-          "fly",
-          function(object, first_temp, second_temp) {
-            if (length(first_temp) != length(second_temp)) {
-              stop("The two temperature objects don't have the same length.")
-            } else{
-              output <- numeric()
-              for (i in seq_along(first_temp)) {
-                output <- c(
-                  output,
-                  object@PE[which.min(abs(object@x_PE - second_temp[i])),
-                            which.min(abs(object@x_PE - first_temp[i]))]
-                )
-              }
-              return(output)
-            }
-          })
+setMethod(
+  "get_prediction",
+  "fly",
+  function(object, first_temp, second_temp) {
+    if (length(first_temp) != length(second_temp)) {
+      stop("The two temperature objects don't have the same length.")
+    } else {
+      output <- numeric()
+      for (i in seq_along(first_temp)) {
+        output <- c(
+          output,
+          object@PE[
+            which.min(abs(object@x_PE - second_temp[i])),
+            which.min(abs(object@x_PE - first_temp[i]))
+          ]
+        )
+      }
+      return(output)
+    }
+  }
+)
 
 #' @title fly method to calculate survival of flies
 #'
@@ -299,13 +317,14 @@ setMethod("get_prediction",
 #' @rdname calculate_survival
 #' @importFrom stats rnorm
 #' @export
-setGeneric("calculate_survival",  function(object,
-                                           received_PE,
-                                           temperature,
-                                           offspring_error = NULL,
-                                           overall_GW,
-                                           presampled_error = NULL)
-  standardGeneric("calculate_survival"))
+setGeneric("calculate_survival", function(object,
+                                          received_PE,
+                                          temperature,
+                                          offspring_error = NULL,
+                                          overall_GW,
+                                          presampled_error = NULL) {
+  standardGeneric("calculate_survival")
+})
 
 #' @title fly method to calculate survival of flies
 #'
@@ -321,43 +340,46 @@ setGeneric("calculate_survival",  function(object,
 #' @rdname calculate_survival
 #' @importFrom stats rnorm
 #' @export
-setMethod("calculate_survival",
-          "fly",
-          function(object,
-                   received_PE,
-                   temperature,
-                   offspring_error = NULL,
-                   overall_GW,
-                   presampled_error = NULL) {
-            if (is.null(presampled_error)) {
-              offspring_experience <- temperature +
-                rnorm(length(temperature), sd = offspring_error)
-            } else if (is.null(offspring_error)) {
-              offspring_experience <- temperature + presampled_error
-            } else {
-              stop("Both sources of error are NULL. Needs at least one.")
-            }
-            offspring_difference <-
-              abs(offspring_experience - object@mean_surv)
-            # in a previous version, I used a different "x_" vector for weights
-            # but it has the same length as x_PE with only half the max. This
-            # should be equivalent.
-            weights_indices <- numeric()
-            for (i in length(offspring_difference)) {
-              weights_indices <- c(weights_indices,
-                which.min(abs((object@x_PE / 2) - offspring_difference[i]))
-              )
-            }
-            midpoint <-
-              object@mean_surv * overall_GW +
-              (1 - overall_GW) *
-              (
-                object@mean_surv * object@GW[weights_indices] +
-                offspring_experience * object@OW[weights_indices] +
-                received_PE * object@PW[weights_indices]
-              )
-            return(survival(temperature, midpoint))
-          })
+setMethod(
+  "calculate_survival",
+  "fly",
+  function(object,
+           received_PE,
+           temperature,
+           offspring_error = NULL,
+           overall_GW,
+           presampled_error = NULL) {
+    if (is.null(presampled_error)) {
+      offspring_experience <- temperature +
+        rnorm(length(temperature), sd = offspring_error)
+    } else if (is.null(offspring_error)) {
+      offspring_experience <- temperature + presampled_error
+    } else {
+      stop("Both sources of error are NULL. Needs at least one.")
+    }
+    offspring_difference <-
+      abs(offspring_experience - object@mean_surv)
+    # in a previous version, I used a different "x_" vector for weights
+    # but it has the same length as x_PE with only half the max. This
+    # should be equivalent.
+    weights_indices <- numeric()
+    for (i in length(offspring_difference)) {
+      weights_indices <- c(
+        weights_indices,
+        which.min(abs((object@x_PE / 2) - offspring_difference[i]))
+      )
+    }
+    midpoint <-
+      object@mean_surv * overall_GW +
+      (1 - overall_GW) *
+        (
+          object@mean_surv * object@GW[weights_indices] +
+            offspring_experience * object@OW[weights_indices] +
+            received_PE * object@PW[weights_indices]
+        )
+    return(c(midpoint, survival(temperature, midpoint)))
+  }
+)
 
 
 #' @title fly method to retrieve information weights
@@ -373,12 +395,13 @@ setMethod("calculate_survival",
 #' @rdname get_weight
 #' @importFrom stats rnorm
 #' @export
-setGeneric("get_weight",  function(object,
-                                   temperature,
-                                   weight,
-                                   offspring_error = NULL,
-                                   presampled_error = NULL)
-             standardGeneric("get_weight"))
+setGeneric("get_weight", function(object,
+                                  temperature,
+                                  weight,
+                                  offspring_error = NULL,
+                                  presampled_error = NULL) {
+  standardGeneric("get_weight")
+})
 
 #' @title fly method to retrieve information weights
 #'
@@ -393,40 +416,43 @@ setGeneric("get_weight",  function(object,
 #' @rdname get_weight
 #' @importFrom stats rnorm
 #' @export
-setMethod("get_weight",
-          "fly",
-          function(object,
-                   temperature,
-                   weight,
-                   offspring_error = NULL,
-                   presampled_error = NULL) {
-            if (!(weight %in% c("GW", "OW", "PW"))) {
-              stop("Specified weight should be \"GW\", \"OW\", or \"PW\".")
-            }
-            if (is.null(presampled_error)) {
-              offspring_experience <- temperature +
-                rnorm(length(temperature), sd = offspring_error)
-            } else if (is.null(offspring_error)) {
-              offspring_experience <- temperature + presampled_error
-            } else {
-              stop("Both sources of error are NULL. Needs at least one.")
-            }
-            offspring_difference <-
-              abs(offspring_experience - object@mean_surv)
-            # in a previous version, I used a different "x_" vector for weights
-            # but it has the same length as x_PE with only half the max. This
-            # should be equivalent.
-            weights_indices <- numeric()
-            for (i in seq_along(offspring_difference)) {
-              weights_indices <- c(weights_indices,
-                which.min(abs((object@x_PE / 2) - offspring_difference[i]))
-              )
-            }
-            if (weight == "GW") {
-              return(object@GW[weights_indices])
-            } else if (weight == "OW") {
-              return(object@OW[weights_indices])
-            } else if (weight == "PW") {
-              return(object@PW[weights_indices])
-            }
-          })
+setMethod(
+  "get_weight",
+  "fly",
+  function(object,
+           temperature,
+           weight,
+           offspring_error = NULL,
+           presampled_error = NULL) {
+    if (!(weight %in% c("GW", "OW", "PW"))) {
+      stop("Specified weight should be \"GW\", \"OW\", or \"PW\".")
+    }
+    if (is.null(presampled_error)) {
+      offspring_experience <- temperature +
+        rnorm(length(temperature), sd = offspring_error)
+    } else if (is.null(offspring_error)) {
+      offspring_experience <- temperature + presampled_error
+    } else {
+      stop("Both sources of error are NULL. Needs at least one.")
+    }
+    offspring_difference <-
+      abs(offspring_experience - object@mean_surv)
+    # in a previous version, I used a different "x_" vector for weights
+    # but it has the same length as x_PE with only half the max. This
+    # should be equivalent.
+    weights_indices <- numeric()
+    for (i in seq_along(offspring_difference)) {
+      weights_indices <- c(
+        weights_indices,
+        which.min(abs((object@x_PE / 2) - offspring_difference[i]))
+      )
+    }
+    if (weight == "GW") {
+      return(object@GW[weights_indices])
+    } else if (weight == "OW") {
+      return(object@OW[weights_indices])
+    } else if (weight == "PW") {
+      return(object@PW[weights_indices])
+    }
+  }
+)
