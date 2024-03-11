@@ -7,6 +7,7 @@
 fly(
   replicate,
   population,
+  min_PE,
   max_PE,
   precision,
   x_PE,

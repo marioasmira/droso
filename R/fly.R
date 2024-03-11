@@ -58,7 +58,7 @@ setClass(
     min_PE = -20,
     max_PE = 30,
     precision = 100,
-    x_PE = seq(min_PE, max_PE, length.out = precision),
+    x_PE = seq(-20, 30, length.out = 100),
     # PE_genes should be a vector of 25 values
     PE_genes = rep(x = 0, times = 25),
     # The following genes should be a vector of 5 values each
