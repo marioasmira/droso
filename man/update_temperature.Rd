@@ -4,7 +4,15 @@
 \alias{update_temperature}
 \title{Update temperature}
 \usage{
-update_temperature(temperature, day, autocorr, base_env, amplitude, period)
+update_temperature(
+  temperature,
+  day,
+  autocorr,
+  base_env,
+  amplitude,
+  rand_env,
+  period
+)
 }
 \arguments{
 \item{temperature}{The temperature of the previous day.}
@@ -16,6 +24,8 @@ update_temperature(temperature, day, autocorr, base_env, amplitude, period)
 \item{base_env}{The base value around which the sine wave will change.}
 
 \item{amplitude}{The amplitude of the sine wave.}
+
+\item{rand_env}{Amount of error to add to the environment.}
 
 \item{period}{The period of the sine wave.}
 }
