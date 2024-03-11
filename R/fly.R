@@ -29,6 +29,7 @@ setClass(
   slots = list(
     replicate = "numeric",
     population = "numeric",
+    min_PE = "numeric",
     max_PE = "numeric",
     precision = "numeric",
     x_PE = "numeric",
@@ -54,9 +55,10 @@ setClass(
   prototype = list(
     replicate = 0,
     population = 0,
-    max_PE = 50,
+    min_PE = -20,
+    max_PE = 30,
     precision = 100,
-    x_PE = seq(0, 50, length.out = 100),
+    x_PE = seq(min_PE, max_PE, length.out = precision),
     # PE_genes should be a vector of 25 values
     PE_genes = rep(x = 0, times = 25),
     # The following genes should be a vector of 5 values each
@@ -96,6 +98,7 @@ setClass(
 fly <-
   function(replicate,
            population,
+           min_PE,
            max_PE,
            precision,
            x_PE,
@@ -109,6 +112,7 @@ fly <-
       "fly",
       replicate = replicate,
       population = population,
+      min_PE = min_PE,
       max_PE = max_PE,
       precision = precision,
       x_PE = seq(0, max_PE, length.out = precision),
@@ -164,10 +168,10 @@ setMethod(
     object@PE <-
       logis(
         x = spline_2d(object@PE_genes, bivar_matrix),
-        max = object@max_PE,
+        max = abs(object@min_PE) + abs(object@max_PE),
         k = logis_k,
         x_0 = logis_x0
-      )
+      ) + object@min_PE
     # Performing the calculation beforehand instead of inside the
     # ifelse tests.
     # Assigning the values directly to the final object to make it more
