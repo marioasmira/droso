@@ -115,7 +115,7 @@ fly <-
       min_PE = min_PE,
       max_PE = max_PE,
       precision = precision,
-      x_PE = seq(0, max_PE, length.out = precision),
+      x_PE = seq(min_PE, max_PE, length.out = precision),
       PE_genes = PE_genes,
       GW_genes = GW_genes,
       OW_genes = OW_genes,
