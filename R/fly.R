@@ -141,17 +141,13 @@ fly <-
 #' @param object An object
 #' @param univar_matrix 1D matrix from rcspline.
 #' @param bivar_matrix 2D matrix from rcspline.
-#' @param logis_k Value for the k parameter for the inverse-logit function.
-#' @param logis_x0 Value for the x0 parameter for the inverse-logit function.
 #' @returns The same object but modified to have a calculated phenotype.
 #' @rdname calculate_phenotype
 #' @importFrom rcspline logis spline_2d spline_1d
 #' @export
 setGeneric("calculate_phenotype", function(object,
                                            univar_matrix,
-                                           bivar_matrix,
-                                           logis_k,
-                                           logis_x0) {
+                                           bivar_matrix) {
   standardGeneric("calculate_phenotype")
 })
 
