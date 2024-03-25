@@ -24,6 +24,8 @@ fly(
 
 \item{population}{Population in which the fly was in.}
 
+\item{min_PE}{min_PE Minimum value for the prediction interval.}
+
 \item{max_PE}{Maximum value for the prediction interval.}
 
 \item{precision}{Precision for all calculations.}
