@@ -7,6 +7,7 @@
 fly(
   replicate,
   population,
+  min_PE,
   max_PE,
   precision,
   x_PE,
@@ -22,6 +23,8 @@ fly(
 \item{replicate}{The simulation replicate the fly was in.}
 
 \item{population}{Population in which the fly was in.}
+
+\item{min_PE}{min_PE Minimum value for the prediction interval.}
 
 \item{max_PE}{Maximum value for the prediction interval.}
 

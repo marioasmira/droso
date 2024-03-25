@@ -8,7 +8,10 @@
 #'
 #' @slot replicate The simulation replicate the fly was in.
 #' @slot population Population in which the fly was in.
+#' @slot min_PE Minimum value for the prediction interval.
 #' @slot max_PE Maximum value for the prediction interval.
+#' @slot mid_PE Midpoint value for the prediction interval.
+#' @slot total_PE Total length value for the prediction interval.
 #' @slot precision Precision for all calculations.
 #' @slot x_PE The range of used temperatures.
 #' @slot PE_genes Vector of 25 values that define the PE reaction norm.
@@ -29,7 +32,10 @@ setClass(
   slots = list(
     replicate = "numeric",
     population = "numeric",
+    min_PE = "numeric",
     max_PE = "numeric",
+    mid_PE = "numeric",
+    total_PE = "numeric",
     precision = "numeric",
     x_PE = "numeric",
     # PE_genes should be a vector of 25 values
@@ -54,20 +60,23 @@ setClass(
   prototype = list(
     replicate = 0,
     population = 0,
-    max_PE = 50,
+    min_PE = -10,
+    max_PE = 40,
+    mid_PE = 15,
+    total_PE = 50,
     precision = 100,
-    x_PE = seq(0, 50, length.out = 100),
+    x_PE = seq(-10, 40, length.out = 100),
     # PE_genes should be a vector of 25 values
-    PE_genes = rep(x = 0, times = 25),
+    PE_genes = c(23, rep(x = 0, times = 24)),
     # The following genes should be a vector of 5 values each
-    GW_genes = c(1, 0, 0, 0, 0),
-    OW_genes = c(1, 0, 0, 0, 0),
-    PW_genes = c(1, 0, 0, 0, 0),
+    GW_genes = c(5, 0, 0, 0, 0),
+    OW_genes = c(-5, 0, 0, 0, 0),
+    PW_genes = c(-5, 0, 0, 0, 0),
     # mean_surv is a single value
     mean_surv = 25,
     # fecundity_genes should be a vector with 3 values:
     # mean_eggs, sd_eggs, and skew
-    fecundity_genes = c(25, 15, -5),
+    fecundity_genes = c(30, 7, -6),
     # Below are phenotypes
     PE = matrix(0, 100, 100),
     GW = rep(0, 100),
@@ -81,6 +90,7 @@ setClass(
 #'
 #' @param replicate The simulation replicate the fly was in.
 #' @param population Population in which the fly was in.
+#' @param min_PE min_PE Minimum value for the prediction interval.
 #' @param max_PE Maximum value for the prediction interval.
 #' @param precision Precision for all calculations.
 #' @param x_PE The range of used temperatures.
@@ -96,6 +106,7 @@ setClass(
 fly <-
   function(replicate,
            population,
+           min_PE,
            max_PE,
            precision,
            x_PE,
@@ -109,9 +120,12 @@ fly <-
       "fly",
       replicate = replicate,
       population = population,
+      min_PE = min_PE,
       max_PE = max_PE,
+      mid_PE = (min_PE + max_PE) / 2,
+      total_PE = abs(min_PE) + max_PE,
       precision = precision,
-      x_PE = seq(0, max_PE, length.out = precision),
+      x_PE = seq(min_PE, max_PE, length.out = precision),
       PE_genes = PE_genes,
       GW_genes = GW_genes,
       OW_genes = OW_genes,
@@ -146,8 +160,6 @@ setGeneric("calculate_phenotype", function(object,
 #' @param object An object
 #' @param univar_matrix 1D matrix from rcspline.
 #' @param bivar_matrix 2D matrix from rcspline.
-#' @param logis_k Value for the k parameter for the inverse-logit function.
-#' @param logis_x0 Value for the x0 parameter for the inverse-logit function.
 #' @returns The same object but modified to have a calculated phenotype.
 #' @rdname calculate_phenotype
 #' @importFrom rcspline logis spline_2d spline_1d
@@ -157,17 +169,15 @@ setMethod(
   "fly",
   function(object,
            univar_matrix,
-           bivar_matrix,
-           logis_k,
-           logis_x0) {
+           bivar_matrix) {
     # PE
     object@PE <-
       logis(
         x = spline_2d(object@PE_genes, bivar_matrix),
-        max = object@max_PE,
-        k = logis_k,
-        x_0 = logis_x0
-      )
+        max = object@total_PE,
+        k = 0.15,
+        x_0 = object@mid_PE
+      ) + object@min_PE
     # Performing the calculation beforehand instead of inside the
     # ifelse tests.
     # Assigning the values directly to the final object to make it more
@@ -179,36 +189,15 @@ setMethod(
     object@PW <-
       spline_1d(object@PW_genes, univar_matrix)
     # Performing the same truncation as in the original simulation
-    object@GW <- ifelse(object@GW < 0,
-      0,
-      ifelse(object@GW > 1000,
-        1000,
-        object@GW
-      )
-    )
-    object@OW <- ifelse(object@OW < 0,
-      0,
-      ifelse(object@OW > 1000,
-        1000,
-        object@OW
-      )
-    )
-    object@PW <- ifelse(object@PW < 0,
-      0,
-      ifelse(object@PW > 1000,
-        1000,
-        object@PW
-      )
-    )
+    object@GW <- logis(object@GW, max = 1, k = 0.5, x_0 = 0)
+    object@OW <- logis(object@OW, max = 1, k = 0.5, x_0 = 0)
+    object@PW <- logis(object@PW, max = 1, k = 0.5, x_0 = 0)
     weight_sum <- object@GW + object@OW + object@PW
     # Testing for NaN because in some situations some division by zero
     ## can happen. Simply replacing with 0 seems to work
-    object@GW <-
-      ifelse(is.nan(object@GW / weight_sum), 0, object@GW / weight_sum)
-    object@OW <-
-      ifelse(is.nan(object@OW / weight_sum), 0, object@OW / weight_sum)
-    object@PW <-
-      ifelse(is.nan(object@PW / weight_sum), 0, object@PW / weight_sum)
+    object@GW <- object@GW / weight_sum
+    object@OW <- object@OW / weight_sum
+    object@PW <- object@PW / weight_sum
     # egg_laying vector
     # 800 is used as a scale for the maximum number of eggs at the start
     object@egg_laying <-

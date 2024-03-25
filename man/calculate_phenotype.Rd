@@ -7,7 +7,7 @@
 \usage{
 calculate_phenotype(object, univar_matrix, bivar_matrix, logis_k, logis_x0)
 
-\S4method{calculate_phenotype}{fly}(object, univar_matrix, bivar_matrix, logis_k, logis_x0)
+\S4method{calculate_phenotype}{fly}(object, univar_matrix, bivar_matrix)
 }
 \arguments{
 \item{object}{An object}

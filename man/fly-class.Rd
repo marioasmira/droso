@@ -16,7 +16,13 @@ phenotype will be calculated with internal functions
 
 \item{\code{population}}{Population in which the fly was in.}
 
+\item{\code{min_PE}}{Minimum value for the prediction interval.}
+
 \item{\code{max_PE}}{Maximum value for the prediction interval.}
+
+\item{\code{mid_PE}}{Midpoint value for the prediction interval.}
+
+\item{\code{total_PE}}{Total length value for the prediction interval.}
 
 \item{\code{precision}}{Precision for all calculations.}
 
