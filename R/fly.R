@@ -160,8 +160,6 @@ setGeneric("calculate_phenotype", function(object,
 #' @param object An object
 #' @param univar_matrix 1D matrix from rcspline.
 #' @param bivar_matrix 2D matrix from rcspline.
-#' @param logis_k Value for the k parameter for the inverse-logit function.
-#' @param logis_x0 Value for the x0 parameter for the inverse-logit function.
 #' @returns The same object but modified to have a calculated phenotype.
 #' @rdname calculate_phenotype
 #' @importFrom rcspline logis spline_2d spline_1d
@@ -171,9 +169,7 @@ setMethod(
   "fly",
   function(object,
            univar_matrix,
-           bivar_matrix,
-           logis_k,
-           logis_x0) {
+           bivar_matrix) {
     # PE
     object@PE <-
       logis(
@@ -199,12 +195,9 @@ setMethod(
     weight_sum <- object@GW + object@OW + object@PW
     # Testing for NaN because in some situations some division by zero
     ## can happen. Simply replacing with 0 seems to work
-    object@GW <-
-      ifelse(is.nan(object@GW / weight_sum), 0, object@GW / weight_sum)
-    object@OW <-
-      ifelse(is.nan(object@OW / weight_sum), 0, object@OW / weight_sum)
-    object@PW <-
-      ifelse(is.nan(object@PW / weight_sum), 0, object@PW / weight_sum)
+    object@GW <- object@GW / weight_sum
+    object@OW <- object@OW / weight_sum
+    object@PW <- object@PW / weight_sum
     # egg_laying vector
     # 800 is used as a scale for the maximum number of eggs at the start
     object@egg_laying <-
