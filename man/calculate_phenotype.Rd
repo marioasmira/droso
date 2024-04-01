@@ -5,9 +5,9 @@
 \alias{calculate_phenotype,fly-method}
 \title{fly method to calculate phenotype}
 \usage{
-calculate_phenotype(object, univar_matrix, bivar_matrix)
+calculate_phenotype(object, univar_matrix, bivar_matrix, constant_area)
 
-\S4method{calculate_phenotype}{fly}(object, univar_matrix, bivar_matrix)
+\S4method{calculate_phenotype}{fly}(object, univar_matrix, bivar_matrix, constant_area)
 }
 \arguments{
 \item{object}{An object}
@@ -15,14 +15,12 @@ calculate_phenotype(object, univar_matrix, bivar_matrix)
 \item{univar_matrix}{1D matrix from rcspline.}
 
 \item{bivar_matrix}{2D matrix from rcspline.}
+
+\item{constant_area}{Constant area object to calculate fecundity}
 }
 \value{
 The same object but modified to have a calculated phenotype.
-
-The same object but modified to have a calculated phenotype.
 }
 \description{
-fly method to calculate phenotype
-
 fly method to calculate phenotype
 }

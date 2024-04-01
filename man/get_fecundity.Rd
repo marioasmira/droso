@@ -16,11 +16,7 @@ get_fecundity(object, temperature)
 }
 \value{
 Fecundity at the provided temperature.
-
-Fecundity at the provided temperature.
 }
 \description{
-fly method to retrieve fecundity with day
-
 fly method to retrieve fecundity with day
 }

@@ -7,14 +7,14 @@
 fly(
   replicate,
   population,
-  min_PE,
-  max_PE,
+  min_pe,
+  max_pe,
   precision,
-  x_PE,
-  PE_genes,
-  GW_genes,
-  OW_genes,
-  PW_genes,
+  x_pe,
+  pe_genes,
+  gw_genes,
+  ow_genes,
+  pw_genes,
   mean_surv,
   fecundity_genes
 )
@@ -24,26 +24,26 @@ fly(
 
 \item{population}{Population in which the fly was in.}
 
-\item{min_PE}{min_PE Minimum value for the prediction interval.}
+\item{min_pe}{min_PE Minimum value for the prediction interval.}
 
-\item{max_PE}{Maximum value for the prediction interval.}
+\item{max_pe}{Maximum value for the prediction interval.}
 
 \item{precision}{Precision for all calculations.}
 
-\item{x_PE}{The range of used temperatures.}
+\item{x_pe}{The range of used temperatures.}
 
-\item{PE_genes}{Vector of 25 values that define the PE reaction norm.}
+\item{pe_genes}{Vector of 25 values that define the PE reaction norm.}
 
-\item{GW_genes}{Vector of 5 vales that define the GW reaction norm.}
+\item{gw_genes}{Vector of 5 vales that define the GW reaction norm.}
 
-\item{OW_genes}{Vector of 5 vales that define the OW reaction norm.}
+\item{ow_genes}{Vector of 5 vales that define the OW reaction norm.}
 
-\item{PW_genes}{Vector of 5 vales that define the PW reaction norm.}
+\item{pw_genes}{Vector of 5 vales that define the PW reaction norm.}
 
 \item{mean_surv}{Genetic value for the survival midpoint.}
 
-\item{fecundity_genes}{Vector of 3 values that define the mean,
-sd and skew for fecundity.}
+\item{fecundity_genes}{Vector of 5 values that define two inflection points,
+two slopes and one maximum value for fecundity.}
 }
 \description{
 Constructor method for fly

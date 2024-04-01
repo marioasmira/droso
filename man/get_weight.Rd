@@ -36,11 +36,7 @@ be re-used}
 }
 \value{
 The information weight requested for the provided temperature.
-
-The information weight requested for the provided temperature.
 }
 \description{
-fly method to retrieve information weights
-
 fly method to retrieve information weights
 }
