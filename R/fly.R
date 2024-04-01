@@ -8,19 +8,19 @@
 #'
 #' @slot replicate The simulation replicate the fly was in.
 #' @slot population Population in which the fly was in.
-#' @slot min_PE Minimum value for the prediction interval.
-#' @slot max_PE Maximum value for the prediction interval.
-#' @slot mid_PE Midpoint value for the prediction interval.
-#' @slot total_PE Total length value for the prediction interval.
+#' @slot min_pe Minimum value for the prediction interval.
+#' @slot max_pe Maximum value for the prediction interval.
+#' @slot mid_pe Midpoint value for the prediction interval.
+#' @slot total_pe Total length value for the prediction interval.
 #' @slot precision Precision for all calculations.
-#' @slot x_PE The range of used temperatures.
-#' @slot PE_genes Vector of 25 values that define the PE reaction norm.
-#' @slot GW_genes Vector of 5 vales that define the GW reaction norm.
-#' @slot OW_genes Vector of 5 vales that define the OW reaction norm.
-#' @slot PW_genes Vector of 5 vales that define the PW reaction norm.
+#' @slot x_pe The range of used temperatures.
+#' @slot pe_genes Vector of 25 values that define the PE reaction norm.
+#' @slot gw_genes Vector of 5 vales that define the GW reaction norm.
+#' @slot ow_genes Vector of 5 vales that define the OW reaction norm.
+#' @slot pw_genes Vector of 5 vales that define the PW reaction norm.
 #' @slot mean_surv Genetic value for the survival midpoint.
-#' @slot fecundity_genes Vector of 3 values that define the mean,
-#' sd and skew for fecundity.
+#' @slot fecundity_genes Vector of 5 values that define two inflection points,
+#' two slopes and one maximum value for fecundity.
 #' @slot PE PE reaction norm.
 #' @slot GW GW reaction norm.
 #' @slot OW OW reaction norm.
@@ -32,22 +32,22 @@ setClass(
   slots = list(
     replicate = "numeric",
     population = "numeric",
-    min_PE = "numeric",
-    max_PE = "numeric",
-    mid_PE = "numeric",
-    total_PE = "numeric",
+    min_pe = "numeric",
+    max_pe = "numeric",
+    mid_pe = "numeric",
+    total_pe = "numeric",
     precision = "numeric",
-    x_PE = "numeric",
+    x_pe = "numeric",
     # PE_genes should be a vector of 25 values
-    PE_genes = "numeric",
+    pe_genes = "numeric",
     # The following genes should be a vector of 5 values each
-    GW_genes = "numeric",
-    OW_genes = "numeric",
-    PW_genes = "numeric",
+    gw_genes = "numeric",
+    ow_genes = "numeric",
+    pw_genes = "numeric",
     # mean_surv is a single value
     mean_surv = "numeric",
-    # fecundity_genes should be a vector with 3 values:
-    # mean_eggs, sd_eggs, and skew
+    # fecundity_genes should be a vector with 5 values:
+    # L_inflection, L_slope, R_inflection, R_slope, and max
     fecundity_genes = "numeric",
     # Below are phenotypes
     PE = "matrix",
@@ -60,23 +60,23 @@ setClass(
   prototype = list(
     replicate = 0,
     population = 0,
-    min_PE = -10,
-    max_PE = 40,
-    mid_PE = 15,
-    total_PE = 50,
+    min_pe = -10,
+    max_pe = 40,
+    mid_pe = 15,
+    total_pe = 50,
     precision = 100,
-    x_PE = seq(-10, 40, length.out = 100),
+    x_pe = seq(-10, 40, length.out = 100),
     # PE_genes should be a vector of 25 values
-    PE_genes = c(23, rep(x = 0, times = 24)),
+    pe_genes = c(23, rep(x = 0, times = 24)),
     # The following genes should be a vector of 5 values each
-    GW_genes = c(5, 0, 0, 0, 0),
-    OW_genes = c(-5, 0, 0, 0, 0),
-    PW_genes = c(-5, 0, 0, 0, 0),
+    pe_genes = c(5, 0, 0, 0, 0),
+    ow_genes = c(-5, 0, 0, 0, 0),
+    pw_genes = c(-5, 0, 0, 0, 0),
     # mean_surv is a single value
     mean_surv = 25,
     # fecundity_genes should be a vector with 3 values:
     # mean_eggs, sd_eggs, and skew
-    fecundity_genes = c(30, 7, -6),
+    fecundity_genes = c(18.5, 1, 34.5, -1.3, 70),
     # Below are phenotypes
     PE = matrix(0, 100, 100),
     GW = rep(0, 100),
@@ -90,119 +90,128 @@ setClass(
 #'
 #' @param replicate The simulation replicate the fly was in.
 #' @param population Population in which the fly was in.
-#' @param min_PE min_PE Minimum value for the prediction interval.
-#' @param max_PE Maximum value for the prediction interval.
+#' @param min_pe min_PE Minimum value for the prediction interval.
+#' @param max_pe Maximum value for the prediction interval.
 #' @param precision Precision for all calculations.
-#' @param x_PE The range of used temperatures.
-#' @param PE_genes Vector of 25 values that define the PE reaction norm.
-#' @param GW_genes Vector of 5 vales that define the GW reaction norm.
-#' @param OW_genes Vector of 5 vales that define the OW reaction norm.
-#' @param PW_genes Vector of 5 vales that define the PW reaction norm.
+#' @param x_pe The range of used temperatures.
+#' @param pe_genes Vector of 25 values that define the PE reaction norm.
+#' @param gw_genes Vector of 5 vales that define the GW reaction norm.
+#' @param ow_genes Vector of 5 vales that define the OW reaction norm.
+#' @param pw_genes Vector of 5 vales that define the PW reaction norm.
 #' @param mean_surv Genetic value for the survival midpoint.
-#' @param fecundity_genes Vector of 3 values that define the mean,
-#' sd and skew for fecundity.
+#' @param fecundity_genes Vector of 5 values that define two inflection points,
+#' two slopes and one maximum value for fecundity.
 #' @importFrom methods new
 #' @export
 fly <-
   function(replicate,
            population,
-           min_PE,
-           max_PE,
+           min_pe,
+           max_pe,
            precision,
-           x_PE,
-           PE_genes,
-           GW_genes,
-           OW_genes,
-           PW_genes,
+           x_pe,
+           pe_genes,
+           gw_genes,
+           ow_genes,
+           pw_genes,
            mean_surv,
            fecundity_genes) {
     new(
       "fly",
       replicate = replicate,
       population = population,
-      min_PE = min_PE,
-      max_PE = max_PE,
-      mid_PE = (min_PE + max_PE) / 2,
-      total_PE = abs(min_PE) + max_PE,
+      min_pe = min_pe,
+      max_pe = max_pe,
+      mid_pe = (min_pe + max_pe) / 2,
+      total_pe = abs(min_pe) + max_pe,
       precision = precision,
-      x_PE = seq(min_PE, max_PE, length.out = precision),
-      PE_genes = PE_genes,
-      GW_genes = GW_genes,
-      OW_genes = OW_genes,
-      PW_genes = PW_genes,
+      x_pe = seq(min_pe, max_pe, length.out = precision),
+      pe_genes = pe_genes,
+      gw_genes = gw_genes,
+      ow_genes = ow_genes,
+      pw_genes = pw_genes,
       mean_surv = mean_surv,
       fecundity_genes = fecundity_genes
     )
   }
 
-
 #' @title fly method to calculate phenotype
 #'
 #' @param object An object
 #' @param univar_matrix 1D matrix from rcspline.
 #' @param bivar_matrix 2D matrix from rcspline.
+#' @param constant_area Constant area object to calculate fecundity
 #' @returns The same object but modified to have a calculated phenotype.
 #' @rdname calculate_phenotype
 #' @importFrom rcspline logis spline_2d spline_1d
 #' @export
-setGeneric("calculate_phenotype", function(object,
-                                           univar_matrix,
-                                           bivar_matrix) {
-  standardGeneric("calculate_phenotype")
-})
+setGeneric(
+  "calculate_phenotype",
+  function(
+      object,
+      univar_matrix,
+      bivar_matrix,
+      constant_area) {
+    standardGeneric("calculate_phenotype")
+  }
+)
 
-#' @title fly method to calculate phenotype
-#'
-#' @param object An object
-#' @param univar_matrix 1D matrix from rcspline.
-#' @param bivar_matrix 2D matrix from rcspline.
-#' @returns The same object but modified to have a calculated phenotype.
 #' @rdname calculate_phenotype
-#' @importFrom rcspline logis spline_2d spline_1d
-#' @export
 setMethod(
   "calculate_phenotype",
-  "fly",
-  function(object,
-           univar_matrix,
-           bivar_matrix) {
+  signature = c(object = "fly"),
+  definition = function(object,
+                        univar_matrix,
+                        bivar_matrix,
+                        constant_area) {
     # PE
     object@PE <-
       logis(
-        x = spline_2d(object@PE_genes, bivar_matrix),
-        max = object@total_PE,
+        x = spline_2d(object@pe_genes, bivar_matrix),
+        max = object@total_pe,
         k = 0.15,
-        x_0 = object@mid_PE
-      ) + object@min_PE
+        x_0 = object@mid_pe
+      ) + object@min_pe
     # Performing the calculation beforehand instead of inside the
     # ifelse tests.
     # Assigning the values directly to the final object to make it more
     # memory efficient
     object@GW <-
-      spline_1d(object@GW_genes, univar_matrix)
+      spline_1d(object@gw_genes, univar_matrix)
     object@OW <-
-      spline_1d(object@OW_genes, univar_matrix)
+      spline_1d(object@ow_genes, univar_matrix)
     object@PW <-
-      spline_1d(object@PW_genes, univar_matrix)
+      spline_1d(object@pw_genes, univar_matrix)
     # Performing the same truncation as in the original simulation
     object@GW <- logis(object@GW, max = 1, k = 0.5, x_0 = 0)
     object@OW <- logis(object@OW, max = 1, k = 0.5, x_0 = 0)
     object@PW <- logis(object@PW, max = 1, k = 0.5, x_0 = 0)
     weight_sum <- object@GW + object@OW + object@PW
-    # Testing for NaN because in some situations some division by zero
-    ## can happen. Simply replacing with 0 seems to work
     object@GW <- object@GW / weight_sum
     object@OW <- object@OW / weight_sum
     object@PW <- object@PW / weight_sum
     # egg_laying vector
-    # 800 is used as a scale for the maximum number of eggs at the start
-    object@egg_laying <-
-      800 * skew_normal_pdf(
-        object@x_PE,
+    egg_scale <-
+      get_scale(
+        constant_area,
+        squarelike,
         object@fecundity_genes[1],
         object@fecundity_genes[2],
-        object@fecundity_genes[3]
+        object@fecundity_genes[3],
+        object@fecundity_genes[4],
+        object@fecundity_genes[5]
       )
+    egg_scale <- clip_value(egg_scale, 0.0000001, 2)
+    fecundity <- squarelike(
+        object@x_pe,
+        object@fecundity_genes[1],
+        object@fecundity_genes[2],
+        object@fecundity_genes[3],
+        object@fecundity_genes[4],
+        object@fecundity_genes[5]
+      )
+    object@egg_laying <- egg_scale *
+      clip_value(fecundity, 0.0000001, object@fecundity_genes[5])
     return(object)
   }
 )
@@ -219,13 +228,7 @@ setGeneric("get_fecundity", function(object,
   standardGeneric("get_fecundity")
 })
 
-#' @title fly method to retrieve fecundity with day
-#'
-#' @param object An object
-#' @param temperature Temperature for which to retrieve fecundity.
-#' @returns Fecundity at the provided temperature.
 #' @rdname get_fecundity
-#' @export
 setMethod(
   "get_fecundity",
   "fly",
@@ -236,7 +239,7 @@ setMethod(
       output <- c(
         output,
         object@egg_laying[
-          which.min(abs(object@x_PE - temperature[i]))
+          which.min(abs(object@x_pe - temperature[i]))
         ]
       )
     }
@@ -258,14 +261,7 @@ setGeneric("get_prediction", function(object,
   standardGeneric("get_prediction")
 })
 
-#' @title fly method to retrieve prediction with two temperatures
-#'
-#' @param object An object
-#' @param first_temp Value of temperature for first fly experience.
-#' @param second_temp Value of temperature for second fly experience.
-#' @returns The prediction from the reaction norm.
 #' @rdname get_prediction
-#' @export
 setMethod(
   "get_prediction",
   "fly",
@@ -278,8 +274,8 @@ setMethod(
         output <- c(
           output,
           object@PE[
-            which.min(abs(object@x_PE - second_temp[i])),
-            which.min(abs(object@x_PE - first_temp[i]))
+            which.min(abs(object@x_pe - second_temp[i])),
+            which.min(abs(object@x_pe - first_temp[i]))
           ]
         )
       }
@@ -311,20 +307,7 @@ setGeneric("calculate_survival", function(object,
   standardGeneric("calculate_survival")
 })
 
-#' @title fly method to calculate survival of flies
-#'
-#' @param object An object
-#' @param received_PE Prediction received by the mother.
-#' @param temperature Value of temperature.
-#' @param offspring_error Amount of error that offspring have to measure
-#' temperature. Varies between replicates.
-#' @param overall_GW Baseline value for GW. Varies between replicates.
-#' @param presampled_error Pre-sampled error in cases where randomness will
-#' be re-used
-#' @returns The survival according to temperature, prediction and phenotype.
 #' @rdname calculate_survival
-#' @importFrom stats rnorm
-#' @export
 setMethod(
   "calculate_survival",
   "fly",
@@ -351,7 +334,7 @@ setMethod(
     for (i in length(offspring_difference)) {
       weights_indices <- c(
         weights_indices,
-        which.min(abs((object@x_PE / 2) - offspring_difference[i]))
+        which.min(abs((object@x_pe / 2) - offspring_difference[i]))
       )
     }
     midpoint <-
@@ -365,7 +348,6 @@ setMethod(
     return(c(midpoint, survival(temperature, midpoint)))
   }
 )
-
 
 #' @title fly method to retrieve information weights
 #'
@@ -388,19 +370,7 @@ setGeneric("get_weight", function(object,
   standardGeneric("get_weight")
 })
 
-#' @title fly method to retrieve information weights
-#'
-#' @param object An object
-#' @param temperature Value of temperature.
-#' @param weight Which weight to retrive. "GW", "OW", or "PW".
-#' @param offspring_error Amount of error that offspring have to measure
-#' temperature. Varies between replicates.
-#' @param presampled_error Pre-sampled error in cases where randomness will
-#' be re-used
-#' @returns The information weight requested for the provided temperature.
 #' @rdname get_weight
-#' @importFrom stats rnorm
-#' @export
 setMethod(
   "get_weight",
   "fly",
@@ -429,7 +399,7 @@ setMethod(
     for (i in seq_along(offspring_difference)) {
       weights_indices <- c(
         weights_indices,
-        which.min(abs((object@x_PE / 2) - offspring_difference[i]))
+        which.min(abs((object@x_pe / 2) - offspring_difference[i]))
       )
     }
     if (weight == "GW") {

@@ -40,11 +40,7 @@ be re-used}
 }
 \value{
 The survival according to temperature, prediction and phenotype.
-
-The survival according to temperature, prediction and phenotype.
 }
 \description{
-fly method to calculate survival of flies
-
 fly method to calculate survival of flies
 }

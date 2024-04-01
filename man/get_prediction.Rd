@@ -18,11 +18,7 @@ get_prediction(object, first_temp, second_temp)
 }
 \value{
 The prediction from the reaction norm.
-
-The prediction from the reaction norm.
 }
 \description{
-fly method to retrieve prediction with two temperatures
-
 fly method to retrieve prediction with two temperatures
 }

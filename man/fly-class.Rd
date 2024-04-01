@@ -16,30 +16,30 @@ phenotype will be calculated with internal functions
 
 \item{\code{population}}{Population in which the fly was in.}
 
-\item{\code{min_PE}}{Minimum value for the prediction interval.}
+\item{\code{min_pe}}{Minimum value for the prediction interval.}
 
-\item{\code{max_PE}}{Maximum value for the prediction interval.}
+\item{\code{max_pe}}{Maximum value for the prediction interval.}
 
-\item{\code{mid_PE}}{Midpoint value for the prediction interval.}
+\item{\code{mid_pe}}{Midpoint value for the prediction interval.}
 
-\item{\code{total_PE}}{Total length value for the prediction interval.}
+\item{\code{total_pe}}{Total length value for the prediction interval.}
 
 \item{\code{precision}}{Precision for all calculations.}
 
-\item{\code{x_PE}}{The range of used temperatures.}
+\item{\code{x_pe}}{The range of used temperatures.}
 
-\item{\code{PE_genes}}{Vector of 25 values that define the PE reaction norm.}
+\item{\code{pe_genes}}{Vector of 25 values that define the PE reaction norm.}
 
-\item{\code{GW_genes}}{Vector of 5 vales that define the GW reaction norm.}
+\item{\code{gw_genes}}{Vector of 5 vales that define the GW reaction norm.}
 
-\item{\code{OW_genes}}{Vector of 5 vales that define the OW reaction norm.}
+\item{\code{ow_genes}}{Vector of 5 vales that define the OW reaction norm.}
 
-\item{\code{PW_genes}}{Vector of 5 vales that define the PW reaction norm.}
+\item{\code{pw_genes}}{Vector of 5 vales that define the PW reaction norm.}
 
 \item{\code{mean_surv}}{Genetic value for the survival midpoint.}
 
-\item{\code{fecundity_genes}}{Vector of 3 values that define the mean,
-sd and skew for fecundity.}
+\item{\code{fecundity_genes}}{Vector of 5 values that define two inflection points,
+two slopes and one maximum value for fecundity.}
 
 \item{\code{PE}}{PE reaction norm.}
 
