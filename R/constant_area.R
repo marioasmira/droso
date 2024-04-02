@@ -62,11 +62,13 @@ constant_area <- function(lower_bound,
 #' @return Numeric scale of the comparison betwee initial and provided areas.
 #' @rdname get_scale
 #' @export
-setGeneric("get_scale",
-           function(func,
-                    ...) {
-             standardGeneric("get_scale")
-           })
+setGeneric(
+  "get_scale",
+  function(func,
+           ...) {
+    standardGeneric("get_scale")
+  }
+)
 
 #' @rdname get_scale
 setMethod(
@@ -82,9 +84,16 @@ setMethod(
         func(x, ...)
       )
     }
-    area <- integrate(f, object@lower_bound, object@upper_bound)
+    area <- tryCatch(
+      integrate(f, object@lower_bound, object@upper_bound),
+      error = function(e) {
+        print(e)
+        for (arg in list(...)) {
+          print(paste0("value: ", arg, "."))
+        }
+      }
+    )
 
     return(object@initial_area / unlist(area[1]))
   }
 )
-
