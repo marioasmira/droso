@@ -2,6 +2,7 @@
 
 export("%notin%")
 export(arcsinsqrt)
+export(area_squarelike)
 export(calculate_phenotype)
 export(calculate_survival)
 export(clip_value)

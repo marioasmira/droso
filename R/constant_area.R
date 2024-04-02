@@ -36,19 +36,12 @@ constant_area <- function(lower_bound,
                           upper_bound,
                           func,
                           ...) {
-  f <- function(x) {
-    ifelse(
-      func(x, ...) < 0,
-      0,
-      func(x, ...)
-    )
-  }
-  area <- integrate(f, lower_bound, upper_bound)
+  area <- func(lower_bound, upper_bound, ...)
   new(
     "constant_area",
     lower_bound = lower_bound,
     upper_bound = upper_bound,
-    initial_area = unlist(area[1])
+    initial_area = area
   )
 }
 
@@ -59,40 +52,22 @@ constant_area <- function(lower_bound,
 #' @param ... Arguments for the function
 #'
 #' @importFrom stats integrate
-#' @return Numeric scale of the comparison betwee initial and provided areas.
+#' @return Numeric scale of the comparison between initial and provided areas.
 #' @rdname get_scale
 #' @export
-setGeneric(
-  "get_scale",
-  function(func,
-           ...) {
-    standardGeneric("get_scale")
-  }
-)
+setGeneric("get_scale",
+           function(func,
+                    ...) {
+             standardGeneric("get_scale")
+           })
 
 #' @rdname get_scale
 setMethod(
   "get_scale",
   "constant_area",
-  definition = function(object,
-                        func,
-                        ...) {
-    f <- function(x) {
-      ifelse(
-        func(x, ...) < 0,
-        0,
-        func(x, ...)
-      )
-    }
-    area <- tryCatch(
-      integrate(f, object@lower_bound, object@upper_bound),
-      error = function(e) {
-        print(e)
-        for (arg in list(...)) {
-          print(paste0("value: ", arg, "."))
-        }
-      }
-    )
+  definition = function(object, func, ...) {
+
+    area <- func(object@lower_bound, object@upper_bound, ...)
 
     return(object@initial_area / unlist(area[1]))
   }

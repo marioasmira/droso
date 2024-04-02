@@ -17,7 +17,7 @@ get_scale(func, ...)
 \item{object}{The constant_area object to use.}
 }
 \value{
-Numeric scale of the comparison betwee initial and provided areas.
+Numeric scale of the comparison between initial and provided areas.
 }
 \description{
 Method to compare areas to initial area
