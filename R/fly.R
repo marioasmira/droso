@@ -147,11 +147,10 @@ fly <-
 #' @export
 setGeneric(
   "calculate_phenotype",
-  function(
-      object,
-      univar_matrix,
-      bivar_matrix,
-      constant_area) {
+  function(object,
+           univar_matrix,
+           bivar_matrix,
+           constant_area) {
     standardGeneric("calculate_phenotype")
   }
 )
@@ -191,18 +190,27 @@ setMethod(
     object@OW <- object@OW / weight_sum
     object@PW <- object@PW / weight_sum
     # egg_laying vector
-    egg_scale <-
-      get_scale(
-        constant_area,
-        squarelike,
-        object@fecundity_genes[1],
-        object@fecundity_genes[2],
-        object@fecundity_genes[3],
-        object@fecundity_genes[4],
-        object@fecundity_genes[5]
-      )
-    egg_scale <- clip_value(egg_scale, 0.0000001, 2)
-    fecundity <- squarelike(
+    # check for relative values of parameters
+    if (
+      object@fecundity_genes[1] > object@fecundity_genes[3] ||
+        object@fecundity_genes[2] <= 0 ||
+        object@fecundity_genes[4] >= 0 ||
+        object@fecundity_genes[5] <= 0
+    ) {
+      object@egg_laying <- rep(0.0000001, length(object@x_pe))
+    } else {
+      egg_scale <-
+        get_scale(
+          constant_area,
+          squarelike,
+          object@fecundity_genes[1],
+          object@fecundity_genes[2],
+          object@fecundity_genes[3],
+          object@fecundity_genes[4],
+          object@fecundity_genes[5]
+        )
+      egg_scale <- clip_value(egg_scale, 0.0000001, 2)
+      fecundity <- squarelike(
         object@x_pe,
         object@fecundity_genes[1],
         object@fecundity_genes[2],
@@ -210,8 +218,10 @@ setMethod(
         object@fecundity_genes[4],
         object@fecundity_genes[5]
       )
-    object@egg_laying <- egg_scale *
-      clip_value(fecundity, 0.0000001, object@fecundity_genes[5])
+      object@egg_laying <- egg_scale *
+        clip_value(fecundity, 0.0000001, object@fecundity_genes[5])
+    }
+
     return(object)
   }
 )
