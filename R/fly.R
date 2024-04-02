@@ -202,7 +202,7 @@ setMethod(
       egg_scale <-
         get_scale(
           constant_area,
-          squarelike,
+          area_squarelike,
           object@fecundity_genes[1],
           object@fecundity_genes[2],
           object@fecundity_genes[3],
