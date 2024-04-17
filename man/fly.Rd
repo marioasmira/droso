@@ -15,8 +15,7 @@ fly(
   gw_genes,
   ow_genes,
   pw_genes,
-  mean_surv,
-  fecundity_genes
+  mean_surv
 )
 }
 \arguments{
@@ -41,9 +40,6 @@ fly(
 \item{pw_genes}{Vector of 5 vales that define the PW reaction norm.}
 
 \item{mean_surv}{Genetic value for the survival midpoint.}
-
-\item{fecundity_genes}{Vector of 5 values that define two inflection points,
-two slopes and one maximum value for fecundity.}
 }
 \description{
 Constructor method for fly

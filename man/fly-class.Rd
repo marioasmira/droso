@@ -38,9 +38,6 @@ phenotype will be calculated with internal functions
 
 \item{\code{mean_surv}}{Genetic value for the survival midpoint.}
 
-\item{\code{fecundity_genes}}{Vector of 5 values that define two inflection points,
-two slopes and one maximum value for fecundity.}
-
 \item{\code{PE}}{PE reaction norm.}
 
 \item{\code{GW}}{GW reaction norm.}
@@ -48,7 +45,5 @@ two slopes and one maximum value for fecundity.}
 \item{\code{OW}}{OW reaction norm.}
 
 \item{\code{PW}}{PW reaction norm.}
-
-\item{\code{egg_laying}}{Reaction for egg laying.}
 }}
 

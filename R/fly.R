@@ -19,13 +19,10 @@
 #' @slot ow_genes Vector of 5 vales that define the OW reaction norm.
 #' @slot pw_genes Vector of 5 vales that define the PW reaction norm.
 #' @slot mean_surv Genetic value for the survival midpoint.
-#' @slot fecundity_genes Vector of 5 values that define two inflection points,
-#' two slopes and one maximum value for fecundity.
 #' @slot PE PE reaction norm.
 #' @slot GW GW reaction norm.
 #' @slot OW OW reaction norm.
 #' @slot PW PW reaction norm.
-#' @slot egg_laying Reaction for egg laying.
 #' @export
 setClass(
   "fly",
@@ -46,15 +43,11 @@ setClass(
     pw_genes = "numeric",
     # mean_surv is a single value
     mean_surv = "numeric",
-    # fecundity_genes should be a vector with 5 values:
-    # L_inflection, L_slope, R_inflection, R_slope, and max
-    fecundity_genes = "numeric",
     # Below are phenotypes
     PE = "matrix",
     GW = "numeric",
     OW = "numeric",
-    PW = "numeric",
-    egg_laying = "numeric"
+    PW = "numeric"
   ),
   # Default fly
   prototype = list(
@@ -74,15 +67,11 @@ setClass(
     pw_genes = c(-5, 0, 0, 0, 0),
     # mean_surv is a single value
     mean_surv = 25,
-    # fecundity_genes should be a vector with 3 values:
-    # mean_eggs, sd_eggs, and skew
-    fecundity_genes = c(18.5, 1, 34.5, -1.3, 70),
     # Below are phenotypes
     PE = matrix(0, 100, 100),
     GW = rep(0, 100),
     OW = rep(0, 100),
-    PW = rep(0, 100),
-    egg_laying = rep(0, 100)
+    PW = rep(0, 100)
   )
 )
 
@@ -99,8 +88,6 @@ setClass(
 #' @param ow_genes Vector of 5 vales that define the OW reaction norm.
 #' @param pw_genes Vector of 5 vales that define the PW reaction norm.
 #' @param mean_surv Genetic value for the survival midpoint.
-#' @param fecundity_genes Vector of 5 values that define two inflection points,
-#' two slopes and one maximum value for fecundity.
 #' @importFrom methods new
 #' @export
 fly <-
@@ -114,8 +101,7 @@ fly <-
            gw_genes,
            ow_genes,
            pw_genes,
-           mean_surv,
-           fecundity_genes) {
+           mean_surv) {
     new(
       "fly",
       replicate = replicate,
@@ -130,8 +116,7 @@ fly <-
       gw_genes = gw_genes,
       ow_genes = ow_genes,
       pw_genes = pw_genes,
-      mean_surv = mean_surv,
-      fecundity_genes = fecundity_genes
+      mean_surv = mean_surv
     )
   }
 
@@ -140,7 +125,6 @@ fly <-
 #' @param object An object
 #' @param univar_matrix 1D matrix from rcspline.
 #' @param bivar_matrix 2D matrix from rcspline.
-#' @param constant_area Constant area object to calculate fecundity
 #' @returns The same object but modified to have a calculated phenotype.
 #' @rdname calculate_phenotype
 #' @importFrom rcspline logis spline_2d spline_1d
@@ -149,8 +133,7 @@ setGeneric(
   "calculate_phenotype",
   function(object,
            univar_matrix,
-           bivar_matrix,
-           constant_area) {
+           bivar_matrix) {
     standardGeneric("calculate_phenotype")
   }
 )
@@ -161,8 +144,7 @@ setMethod(
   signature = c(object = "fly"),
   definition = function(object,
                         univar_matrix,
-                        bivar_matrix,
-                        constant_area) {
+                        bivar_matrix) {
     # PE
     object@PE <-
       logis(
@@ -189,71 +171,8 @@ setMethod(
     object@GW <- object@GW / weight_sum
     object@OW <- object@OW / weight_sum
     object@PW <- object@PW / weight_sum
-    # egg_laying vector
-    # check for relative values of parameters
-    if (
-      object@fecundity_genes[1] > object@fecundity_genes[3] ||
-        object@fecundity_genes[2] <= 0 ||
-        object@fecundity_genes[4] >= 0 ||
-        object@fecundity_genes[5] <= 0
-    ) {
-      object@egg_laying <- rep(0.0000001, length(object@x_pe))
-    } else {
-      egg_scale <-
-        get_scale(
-          constant_area,
-          area_squarelike,
-          object@fecundity_genes[1],
-          object@fecundity_genes[2],
-          object@fecundity_genes[3],
-          object@fecundity_genes[4],
-          object@fecundity_genes[5]
-        )
-      egg_scale <- clip_value(egg_scale, 0.0000001, 2)
-      fecundity <- squarelike(
-        object@x_pe,
-        object@fecundity_genes[1],
-        object@fecundity_genes[2],
-        object@fecundity_genes[3],
-        object@fecundity_genes[4],
-        object@fecundity_genes[5]
-      )
-      object@egg_laying <- egg_scale *
-        clip_value(fecundity, 0.0000001, object@fecundity_genes[5])
-    }
 
     return(object)
-  }
-)
-
-#' @title fly method to retrieve fecundity with day
-#'
-#' @param object An object
-#' @param temperature Temperature for which to retrieve fecundity.
-#' @returns Fecundity at the provided temperature.
-#' @rdname get_fecundity
-#' @export
-setGeneric("get_fecundity", function(object,
-                                     temperature) {
-  standardGeneric("get_fecundity")
-})
-
-#' @rdname get_fecundity
-setMethod(
-  "get_fecundity",
-  "fly",
-  function(object,
-           temperature) {
-    output <- numeric()
-    for (i in seq_along(temperature)) {
-      output <- c(
-        output,
-        object@egg_laying[
-          which.min(abs(object@x_pe - temperature[i]))
-        ]
-      )
-    }
-    return(output)
   }
 )
 
