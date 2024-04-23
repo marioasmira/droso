@@ -62,9 +62,9 @@ setClass(
     # PE_genes should be a vector of 25 values
     pe_genes = c(23, rep(x = 0, times = 24)),
     # The following genes should be a vector of 5 values each
-    pe_genes = c(5, 0, 0, 0, 0),
-    ow_genes = c(-5, 0, 0, 0, 0),
-    pw_genes = c(-5, 0, 0, 0, 0),
+    pe_genes = c(2, 0, 0, 0, 0),
+    ow_genes = c(-1, 0, 0, 0, 0),
+    pw_genes = c(-1, 0, 0, 0, 0),
     # mean_surv is a single value
     mean_surv = 25,
     # Below are phenotypes
@@ -164,9 +164,9 @@ setMethod(
     object@PW <-
       spline_1d(object@pw_genes, univar_matrix)
     # Performing the same truncation as in the original simulation
-    object@GW <- logis(object@GW, max = 1, k = 0.5, x_0 = 0)
-    object@OW <- logis(object@OW, max = 1, k = 0.5, x_0 = 0)
-    object@PW <- logis(object@PW, max = 1, k = 0.5, x_0 = 0)
+    object@GW <- exp(object@GW)
+    object@OW <- exp(object@OW)
+    object@PW <- exp(object@PW)
     weight_sum <- object@GW + object@OW + object@PW
     object@GW <- object@GW / weight_sum
     object@OW <- object@OW / weight_sum
