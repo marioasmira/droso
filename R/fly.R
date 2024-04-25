@@ -155,9 +155,9 @@ setMethod(
     # ifelse tests.
     # Assigning the values directly to the final object to make it more
     # memory efficient
-    object@GW <-spline_1d(object@gw_genes, univar_matrix)
-    object@OW <-spline_1d(object@ow_genes, univar_matrix)
-    object@PW <-spline_1d(object@pw_genes, univar_matrix)
+    object@GW <- spline_1d(object@gw_genes, univar_matrix)
+    object@OW <- spline_1d(object@ow_genes, univar_matrix)
+    object@PW <- spline_1d(object@pw_genes, univar_matrix)
     # Performing the same truncation as in the original simulation
     object@GW <- abs(object@GW)
     object@OW <- abs(object@OW)
