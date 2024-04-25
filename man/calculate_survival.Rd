@@ -39,7 +39,8 @@ temperature. Varies between replicates.}
 be re-used}
 }
 \value{
-The survival according to temperature, prediction and phenotype.
+A named list with the midpoint and survival according to
+temperature, prediction and phenotype.
 }
 \description{
 fly method to calculate survival of flies
