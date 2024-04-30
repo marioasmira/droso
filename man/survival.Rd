@@ -16,5 +16,7 @@ The probability of survival of the fly.
 }
 \description{
 Calculates the survival of a fly by creating a square-shaped function with
-two logistic curves and a modified normal distribution pdf.
+two logistic curves and a modified normal distribution pdf. This is a wrapper
+for the squarelike function with the survival specific values already filled
+in.
 }
