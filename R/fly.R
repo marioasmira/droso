@@ -54,19 +54,19 @@ setClass(
     replicate = 0,
     population = 0,
     min_pe = -10,
-    max_pe = 40,
-    mid_pe = 15,
-    total_pe = 50,
+    max_pe = 50,
+    mid_pe = 20,
+    total_pe = 60,
     precision = 100,
-    x_pe = seq(-10, 40, length.out = 100),
+    x_pe = seq(0, 60, length.out = 100),
     # PE_genes should be a vector of 25 values
-    pe_genes = c(23, rep(x = 0, times = 24)),
+    pe_genes = c(24.4, rep(x = 0, times = 24)),
     # The following genes should be a vector of 5 values each
-    pe_genes = c(1, 0, 0, 0, 0),
-    ow_genes = c(0, 0, 0, 0, 0),
-    pw_genes = c(0, 0, 0, 0, 0),
+    pe_genes = c(3, 0, 0, 0, 0),
+    ow_genes = c(-2, 0, 0, 0, 0),
+    pw_genes = c(-2, 0, 0, 0, 0),
     # mean_surv is a single value
-    mean_surv = 25,
+    mean_surv = 22,
     # Below are phenotypes
     PE = matrix(0, 100, 100),
     GW = rep(0, 100),
@@ -109,9 +109,9 @@ fly <-
       min_pe = min_pe,
       max_pe = max_pe,
       mid_pe = (min_pe + max_pe) / 2,
-      total_pe = abs(min_pe) + max_pe,
+      total_pe = max_pe - min_pe,
       precision = precision,
-      x_pe = seq(min_pe, max_pe, length.out = precision),
+      x_pe = seq(0, max_pe - min_pe, length.out = precision),
       pe_genes = pe_genes,
       gw_genes = gw_genes,
       ow_genes = ow_genes,
@@ -148,7 +148,7 @@ setMethod(
       logis(
         x = spline_2d(object@pe_genes, bivar_matrix),
         max = object@total_pe,
-        k = 0.15,
+        k = 0.1,
         x_0 = object@mid_pe
       ) + object@min_pe
     # Performing the calculation beforehand instead of inside the
@@ -159,9 +159,9 @@ setMethod(
     object@OW <- spline_1d(object@ow_genes, univar_matrix)
     object@PW <- spline_1d(object@pw_genes, univar_matrix)
     # Performing the same truncation as in the original simulation
-    object@GW <- abs(object@GW)
-    object@OW <- abs(object@OW)
-    object@PW <- abs(object@PW)
+    object@GW <- 2^(object@GW)
+    object@OW <- 2^(object@OW)
+    object@PW <- 2^(object@PW)
     weight_sum <- object@GW + object@OW + object@PW
     object@GW <- object@GW / weight_sum
     object@OW <- object@OW / weight_sum
@@ -192,6 +192,8 @@ setMethod("get_prediction",
             if (length(first_temp) != length(second_temp)) {
               stop("The two temperature objects don't have the same length.")
             } else {
+              first_temp <- first_temp - object@min_pe
+              second_temp <- second_temp - object@min_pe
               output <- numeric()
               for (i in seq_along(first_temp)) {
                 output <- c(output,
@@ -243,10 +245,11 @@ setMethod("calculate_survival",
             } else {
               stop("Both sources of error are NULL. Needs at least one.")
             }
+            transformed_experience <- offspring_experience - object@min_pe
             weights_indices <- numeric()
-            for (i in length(offspring_experience)) {
+            for (i in length(transformed_experience)) {
               weights_indices <- c(weights_indices,
-                                   which.min(abs((object@x_pe / 2) - offspring_experience[i]
+                                   which.min(abs((object@x_pe / 2) - transformed_experience[i]
                                    )))
             }
             midpoint <-
@@ -303,6 +306,7 @@ setMethod("get_weight",
             } else {
               stop("Both sources of error are NULL. Needs at least one.")
             }
+            offspring_experience <- offspring_experience - object@min_pe
             weights_indices <- numeric()
             for (i in seq_along(offspring_experience)) {
               weights_indices <- c(weights_indices,
