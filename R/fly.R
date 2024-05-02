@@ -249,7 +249,7 @@ setMethod("calculate_survival",
             weights_indices <- numeric()
             for (i in length(transformed_experience)) {
               weights_indices <- c(weights_indices,
-                                   which.min(abs((object@x_pe / 2) - transformed_experience[i]
+                                   which.min(abs(object@x_pe - transformed_experience[i]
                                    )))
             }
             midpoint <-
@@ -310,7 +310,7 @@ setMethod("get_weight",
             weights_indices <- numeric()
             for (i in seq_along(offspring_experience)) {
               weights_indices <- c(weights_indices,
-                                   which.min(abs((object@x_pe / 2) - offspring_experience[i]
+                                   which.min(abs(object@x_pe - offspring_experience[i]
                                    )))
             }
             if (weight == "GW") {
