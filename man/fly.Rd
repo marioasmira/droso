@@ -15,7 +15,8 @@ fly(
   gw_genes,
   ow_genes,
   pw_genes,
-  mean_surv
+  mean_surv,
+  inverted_rnorm = FALSE
 )
 }
 \arguments{
@@ -40,6 +41,9 @@ fly(
 \item{pw_genes}{Vector of 5 vales that define the PW reaction norm.}
 
 \item{mean_surv}{Genetic value for the survival midpoint.}
+
+\item{inverted_rnorm}{Logical value for if the simulation was done with
+inverted reaction norms (intercept on the right side of the x-axis)}
 }
 \description{
 Constructor method for fly

@@ -45,5 +45,8 @@ phenotype will be calculated with internal functions
 \item{\code{OW}}{OW reaction norm.}
 
 \item{\code{PW}}{PW reaction norm.}
+
+\item{\code{inverted_rnorm}}{If the reaction norms were simulated inverted
+(intercept on the right side of the x-axis).}
 }}
 

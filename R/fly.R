@@ -23,6 +23,8 @@
 #' @slot GW GW reaction norm.
 #' @slot OW OW reaction norm.
 #' @slot PW PW reaction norm.
+#' @slot inverted_rnorm If the reaction norms were simulated inverted
+#' (intercept on the right side of the x-axis).
 #' @export
 setClass(
   "fly",
@@ -47,7 +49,8 @@ setClass(
     PE = "matrix",
     GW = "numeric",
     OW = "numeric",
-    PW = "numeric"
+    PW = "numeric",
+    inverted_rnorm = "logical"
   ),
   # Default fly
   prototype = list(
@@ -71,7 +74,8 @@ setClass(
     PE = matrix(0, 100, 100),
     GW = rep(0, 100),
     OW = rep(0, 100),
-    PW = rep(0, 100)
+    PW = rep(0, 100),
+    inverted_rnorm = FALSE
   )
 )
 
@@ -88,6 +92,8 @@ setClass(
 #' @param ow_genes Vector of 5 vales that define the OW reaction norm.
 #' @param pw_genes Vector of 5 vales that define the PW reaction norm.
 #' @param mean_surv Genetic value for the survival midpoint.
+#' @param inverted_rnorm Logical value for if the simulation was done with
+#' inverted reaction norms (intercept on the right side of the x-axis)
 #' @importFrom methods new
 #' @export
 fly <-
@@ -101,7 +107,8 @@ fly <-
            gw_genes,
            ow_genes,
            pw_genes,
-           mean_surv) {
+           mean_surv,
+           inverted_rnorm = FALSE) {
     new(
       "fly",
       replicate = replicate,
@@ -116,7 +123,8 @@ fly <-
       gw_genes = gw_genes,
       ow_genes = ow_genes,
       pw_genes = pw_genes,
-      mean_surv = mean_surv
+      mean_surv = mean_surv,
+      inverted_rnorm = inverted_rnorm
     )
   }
 
@@ -144,9 +152,14 @@ setMethod(
                         univar_matrix,
                         bivar_matrix) {
     # PE
+    if (object@inverted_rnorm) {
+      PE_matrix <- spline_2d(object@pe_genes, bivar_matrix[nrow(bivar_matrix):1, ])
+    } else {
+      PE_matrix <- spline_2d(object@pe_genes, bivar_matrix)
+    }
     object@PE <-
       logis(
-        x = spline_2d(object@pe_genes, bivar_matrix),
+        x = PE_matrix,
         max = object@total_pe,
         k = 0.1,
         x_0 = object@mid_pe
@@ -155,9 +168,15 @@ setMethod(
     # ifelse tests.
     # Assigning the values directly to the final object to make it more
     # memory efficient
-    object@GW <- spline_1d(object@gw_genes, univar_matrix)
-    object@OW <- spline_1d(object@ow_genes, univar_matrix)
-    object@PW <- spline_1d(object@pw_genes, univar_matrix)
+    if (object@inverted_rnorm) {
+      object@GW <- spline_1d(object@gw_genes, univar_matrix[nrow(univar_matrix):1,])
+      object@OW <- spline_1d(object@ow_genes, univar_matrix[nrow(univar_matrix):1,])
+      object@PW <- spline_1d(object@pw_genes, univar_matrix[nrow(univar_matrix):1,])
+    } else {
+      object@GW <- spline_1d(object@gw_genes, univar_matrix)
+      object@OW <- spline_1d(object@ow_genes, univar_matrix)
+      object@PW <- spline_1d(object@pw_genes, univar_matrix)
+    }
     # Performing the same truncation as in the original simulation
     object@GW <- 2^(object@GW)
     object@OW <- 2^(object@OW)
