@@ -7,3 +7,10 @@ Installed via `devtools::install_github('marioasmira/rcspline')`.[2]
 
 The main purpose of this package is to use the `fly` class to mimic the individual based model that generated the data and facilitate the analysis.
 Other useful functions are also included.
+
+## References
+
+[1] <https://github.com/marioasmira/droso_simulation>
+
+[2] <https://github.com/marioasmira/rcspline>
+
